@@ -138,6 +138,7 @@
 				A80000001 /* Sources */,
 				A40000001 /* Frameworks */,
 				A90000001 /* Resources */,
+				AE0000001 /* Copy to Stable Location */,
 			);
 			buildRules = (
 			);
@@ -190,6 +191,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		AE0000001 /* Copy to Stable Location */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Copy to Stable Location";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Only copy for Debug builds to preserve Accessibility permissions\nif [ \"${CONFIGURATION}\" = \"Debug\" ]; then\n    DEST_DIR=\"${HOME}/Applications\"\n    mkdir -p \"${DEST_DIR}\"\n    \n    # Remove old version if exists\n    if [ -d \"${DEST_DIR}/HarpoonMac.app\" ]; then\n        rm -rf \"${DEST_DIR}/HarpoonMac.app\"\n    fi\n    \n    # Copy new version\n    cp -R \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app\" \"${DEST_DIR}/\"\n    \n    echo \"✅ Copied HarpoonMac.app to ${DEST_DIR}\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A80000001 /* Sources */ = {
