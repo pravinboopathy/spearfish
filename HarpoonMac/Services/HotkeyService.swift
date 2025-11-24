@@ -98,11 +98,11 @@ class HotkeyService {
             let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
             let flags = event.flags
 
-            // Check for Cmd+` (toggle picker)
-            if flags.contains(.maskCommand) {
-                print("🎹 Cmd key pressed with keyCode: \(keyCode), kVK_ANSI_Grave: \(kVK_ANSI_Grave)")
-                if keyCode == Int64(kVK_ANSI_Grave) {  // Backtick key (`)
-                    print("🎯 Cmd+` detected - toggling picker!")
+            // Check for Option+Tab (toggle picker)
+            if flags.contains(.maskAlternate) && !flags.contains(.maskCommand) {
+                print("🎹 Option key pressed with keyCode: \(keyCode), kVK_Tab: \(kVK_Tab)")
+                if keyCode == Int64(kVK_Tab) {  // Tab key
+                    print("🎯 Option+Tab detected - toggling picker!")
                     handleTogglePicker()
                     return nil  // Suppress event
                 }
@@ -123,22 +123,24 @@ class HotkeyService {
                 }
             }
 
-            // Check for Leader+1-9 (quick jump)
-            if flags.contains(.maskCommand) {
+            // Check for Option+1-9 (quick jump)
+            if flags.contains(.maskAlternate) && !flags.contains(.maskCommand) && !flags.contains(.maskShift) {
                 if let number = getNumberFromKeyCode(keyCode) {
                     handleQuickJump(number)
                     return nil  // Suppress event
                 }
             }
 
-            // Check for Cmd+Shift+M (mark current window)
-            if flags.contains(.maskCommand) && flags.contains(.maskShift) {
+            // Check for Option+M (mark current window)
+            if flags.contains(.maskAlternate) && !flags.contains(.maskCommand) && !flags.contains(.maskShift) {
                 if keyCode == Int64(kVK_ANSI_M) {
                     harpoonService.markCurrentWindow()
                     return nil
                 }
+            }
 
-                // Check for Cmd+Shift+1-9 (mark to specific position)
+            // Check for Option+Shift+1-9 (mark to specific position)
+            if flags.contains(.maskAlternate) && flags.contains(.maskShift) && !flags.contains(.maskCommand) {
                 if let number = getNumberFromKeyCode(keyCode) {
                     harpoonService.markCurrentWindow(at: number)
                     return nil

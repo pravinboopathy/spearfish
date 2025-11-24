@@ -8,7 +8,6 @@
 import Foundation
 
 struct HarpoonConfig: Codable {
-    var disableNativeCommandTab: Bool
     var leaderKey: String  // "command", "option", "control", "command+option"
     var pinnedWindows: [HarpoonWindow]
     var settings: Settings
@@ -19,8 +18,7 @@ struct HarpoonConfig: Codable {
 
     static var `default`: HarpoonConfig {
         HarpoonConfig(
-            disableNativeCommandTab: false,
-            leaderKey: "command",
+            leaderKey: "option",
             pinnedWindows: [],
             settings: Settings(launchAtLogin: false)
         )
