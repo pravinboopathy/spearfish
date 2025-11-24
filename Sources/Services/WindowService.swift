@@ -150,8 +150,9 @@ class WindowService {
     // MARK: - Window Validation
 
     func isWindowValid(_ cgWindowId: CGWindowID) -> Bool {
-        // Query CG Window API to check if window exists
-        guard let windowList = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as? [[CFString: Any]] else {
+        // Query CG Window API to check if window exists across all spaces
+        // Use .optionAll instead of .optionOnScreenOnly to include windows on other desktops
+        guard let windowList = CGWindowListCopyWindowInfo([.optionAll, .excludeDesktopElements], kCGNullWindowID) as? [[CFString: Any]] else {
             return false
         }
 
