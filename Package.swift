@@ -16,8 +16,7 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "HarpoonMac",
-            dependencies: [],
-            path: "Sources/HarpoonMac"
+            dependencies: []
         )
     ]
 )
