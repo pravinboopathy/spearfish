@@ -82,11 +82,22 @@ class HarpoonService {
             return
         }
 
-        // Find actual window
-        guard let windowInfo = windowService.findWindow(for: harpoonWindow) else {
-            print("❌ Window not found: \(harpoonWindow.windowTitle)")
+        // Check if window still exists
+        guard windowService.isWindowValid(harpoonWindow.cgWindowId) else {
+            print("❌ Window no longer exists: \(harpoonWindow.windowTitle)")
+            // Remove from list
+            removeWindow(at: position)
             return
         }
+
+        // Create WindowInfo from HarpoonWindow
+        let windowInfo = WindowInfo(
+            cgWindowId: harpoonWindow.cgWindowId,
+            pid: harpoonWindow.pid,
+            bundleId: harpoonWindow.bundleId,
+            title: harpoonWindow.windowTitle,
+            appName: harpoonWindow.appName
+        )
 
         // Activate window
         windowService.activateWindow(windowInfo)
@@ -101,13 +112,14 @@ class HarpoonService {
     func validateWindows() {
         // Remove windows that no longer exist
         let validWindows = pinnedWindows.filter { window in
-            windowService.findWindow(for: window) != nil
+            windowService.isWindowValid(window.cgWindowId)
         }
 
         if validWindows.count != pinnedWindows.count {
+            let removedCount = pinnedWindows.count - validWindows.count
             pinnedWindows = validWindows
             savePinnedWindows()
-            print("ℹ️  Cleaned up \(pinnedWindows.count - validWindows.count) closed windows")
+            print("ℹ️  Cleaned up \(removedCount) closed windows")
         }
     }
 

@@ -96,10 +96,12 @@ struct WindowCardView_Previews: PreviewProvider {
         VStack {
             WindowCardView(
                 window: HarpoonWindow(
+                    cgWindowId: 123,
+                    pid: 456,
                     position: 1,
-                    bundleId: "com.google.Chrome",
-                    windowTitle: "Dashboard.tsx - Visual Studio Code",
-                    appName: "Visual Studio Code"
+                    bundleId: "com.microsoft.VSCode",
+                    appName: "Visual Studio Code",
+                    windowTitle: "Dashboard.tsx - Visual Studio Code"
                 ),
                 icon: NSImage(systemSymbolName: "app.fill", accessibilityDescription: "App")
             )

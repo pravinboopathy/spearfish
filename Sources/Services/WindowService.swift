@@ -8,6 +8,10 @@
 import Cocoa
 import ApplicationServices
 
+// Private Accessibility API for CGWindowID <-> AXUIElement conversion
+@_silgen_name("_AXUIElementGetWindow")
+func _AXUIElementGetWindow(_ element: AXUIElement, _ windowId: UnsafeMutablePointer<CGWindowID>) -> AXError
+
 class WindowService {
     private let iconCache: IconCacheService
 
@@ -20,29 +24,38 @@ class WindowService {
     func getAllWindows() -> [WindowInfo] {
         var windows: [WindowInfo] = []
 
-        // Get all running applications
-        let runningApps = NSWorkspace.shared.runningApplications
+        // Get all on-screen windows from CG Window API
+        guard let windowList = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as? [[CFString: Any]] else {
+            return []
+        }
 
-        for app in runningApps {
-            guard let bundleId = app.bundleIdentifier else { continue }
-
-            // Create AX UI element for the application
-            let appElement = AXUIElementCreateApplication(app.processIdentifier)
-
-            // Get windows for this app
-            var windowsRef: CFTypeRef?
-            let result = AXUIElementCopyAttributeValue(appElement, kAXWindowsAttribute as CFString, &windowsRef)
-
-            guard result == .success,
-                  let windowArray = windowsRef as? [AXUIElement] else {
+        for windowDict in windowList {
+            // Extract window properties
+            guard let cgWindowId = windowDict[kCGWindowNumber] as? CGWindowID,
+                  let pid = windowDict[kCGWindowOwnerPID] as? pid_t,
+                  let layer = windowDict[kCGWindowLayer] as? Int,
+                  let ownerName = windowDict[kCGWindowOwnerName] as? String,
+                  let windowTitle = windowDict[kCGWindowName] as? String else {
                 continue
             }
 
-            for windowRef in windowArray {
-                if let windowInfo = getWindowInfo(windowRef: windowRef, bundleId: bundleId, appName: app.localizedName ?? "Unknown") {
-                    windows.append(windowInfo)
-                }
+            // Filter to normal windows (layer 0) with titles
+            guard layer == 0, !windowTitle.isEmpty else {
+                continue
             }
+
+            // Get bundle ID from running application
+            let runningApp = NSWorkspace.shared.runningApplications.first { $0.processIdentifier == pid }
+            let bundleId = runningApp?.bundleIdentifier ?? ""
+
+            let windowInfo = WindowInfo(
+                cgWindowId: cgWindowId,
+                pid: pid,
+                bundleId: bundleId,
+                title: windowTitle,
+                appName: ownerName
+            )
+            windows.append(windowInfo)
         }
 
         return windows
@@ -55,101 +68,99 @@ class WindowService {
             return nil
         }
 
-        let appElement = AXUIElementCreateApplication(frontApp.processIdentifier)
+        let pid = frontApp.processIdentifier
+        let appElement = AXUIElementCreateApplication(pid)
 
-        // Get focused window
+        // Get focused window via AX API
         var focusedWindowRef: CFTypeRef?
-        let result = AXUIElementCopyAttributeValue(appElement, kAXFocusedWindowAttribute as CFString, &focusedWindowRef)
-
-        guard result == .success,
-              let windowRef = focusedWindowRef else {
+        guard AXUIElementCopyAttributeValue(appElement, kAXFocusedWindowAttribute as CFString, &focusedWindowRef) == .success,
+              let axWindow = focusedWindowRef else {
             return nil
         }
 
-        return getWindowInfo(windowRef: windowRef as! AXUIElement, bundleId: bundleId, appName: frontApp.localizedName ?? "Unknown")
-    }
+        let axWindowElement = axWindow as! AXUIElement
 
-    private func getWindowInfo(windowRef: AXUIElement, bundleId: String, appName: String) -> WindowInfo? {
+        // Get window title
         var titleRef: CFTypeRef?
-        AXUIElementCopyAttributeValue(windowRef, kAXTitleAttribute as CFString, &titleRef)
-
+        AXUIElementCopyAttributeValue(axWindowElement, kAXTitleAttribute as CFString, &titleRef)
         guard let title = titleRef as? String, !title.isEmpty else {
             return nil
         }
 
+        // Convert AXUIElement to CGWindowID using private API
+        var cgWindowId: CGWindowID = 0
+        guard _AXUIElementGetWindow(axWindowElement, &cgWindowId) == .success else {
+            return nil
+        }
+
         return WindowInfo(
+            cgWindowId: cgWindowId,
+            pid: pid,
             bundleId: bundleId,
             title: title,
-            appName: appName,
-            windowRef: windowRef
+            appName: frontApp.localizedName ?? "Unknown"
         )
     }
 
     // MARK: - Window Activation
 
+    private func getAXUIElement(for cgWindowId: CGWindowID, pid: pid_t) -> AXUIElement? {
+        let appElement = AXUIElementCreateApplication(pid)
+
+        var windowsRef: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(appElement, kAXWindowsAttribute as CFString, &windowsRef) == .success,
+              let axWindows = windowsRef as? [AXUIElement] else {
+            return nil
+        }
+
+        for axWindow in axWindows {
+            var foundWindowId: CGWindowID = 0
+            if _AXUIElementGetWindow(axWindow, &foundWindowId) == .success,
+               foundWindowId == cgWindowId {
+                return axWindow
+            }
+        }
+
+        return nil
+    }
+
     func activateWindow(_ windowInfo: WindowInfo) {
-        // Find the window and activate it
+        // Find the app by PID
         let runningApps = NSWorkspace.shared.runningApplications
-        guard let app = runningApps.first(where: { $0.bundleIdentifier == windowInfo.bundleId }) else {
-            print("❌ App not found: \(windowInfo.bundleId)")
+        guard let app = runningApps.first(where: { $0.processIdentifier == windowInfo.pid }) else {
+            print("❌ App not found for PID: \(windowInfo.pid)")
             return
         }
 
         // Activate the application
         app.activate(options: [.activateIgnoringOtherApps])
 
-        // Find and focus the specific window
-        let appElement = AXUIElementCreateApplication(app.processIdentifier)
-        var windowsRef: CFTypeRef?
-        let result = AXUIElementCopyAttributeValue(appElement, kAXWindowsAttribute as CFString, &windowsRef)
-
-        guard result == .success,
-              let windowArray = windowsRef as? [AXUIElement] else {
+        // Convert CGWindowID to AXUIElement
+        guard let axWindow = getAXUIElement(for: windowInfo.cgWindowId, pid: windowInfo.pid) else {
+            print("❌ Window not found: \(windowInfo.cgWindowId)")
             return
         }
 
-        for windowRef in windowArray {
-            var titleRef: CFTypeRef?
-            AXUIElementCopyAttributeValue(windowRef, kAXTitleAttribute as CFString, &titleRef)
+        // Focus and raise the window
+        AXUIElementSetAttributeValue(axWindow, kAXMainAttribute as CFString, true as CFTypeRef)
+        AXUIElementPerformAction(axWindow, kAXRaiseAction as CFString)
+        print("✅ Activated window: \(windowInfo.title)")
+    }
 
-            if let title = titleRef as? String, title == windowInfo.title {
-                // Focus this window
-                AXUIElementSetAttributeValue(windowRef, kAXMainAttribute as CFString, true as CFTypeRef)
-                AXUIElementPerformAction(windowRef, kAXRaiseAction as CFString)
-                print("✅ Activated window: \(title)")
-                return
+    // MARK: - Window Validation
+
+    func isWindowValid(_ cgWindowId: CGWindowID) -> Bool {
+        // Query CG Window API to check if window exists
+        guard let windowList = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as? [[CFString: Any]] else {
+            return false
+        }
+
+        return windowList.contains { windowDict in
+            guard let windowId = windowDict[kCGWindowNumber] as? CGWindowID else {
+                return false
             }
+            return windowId == cgWindowId
         }
-    }
-
-    // MARK: - Window Matching
-
-    func findWindow(for harpoonWindow: HarpoonWindow) -> WindowInfo? {
-        let allWindows = getAllWindows()
-
-        // Try exact match first
-        if let exactMatch = allWindows.first(where: {
-            $0.bundleId == harpoonWindow.bundleId && $0.title == harpoonWindow.windowTitle
-        }) {
-            return exactMatch
-        }
-
-        // Try fuzzy match on title
-        if let fuzzyMatch = allWindows.first(where: {
-            $0.bundleId == harpoonWindow.bundleId &&
-            fuzzyMatchTitle($0.title, harpoonWindow.windowTitle)
-        }) {
-            return fuzzyMatch
-        }
-
-        return nil
-    }
-
-    private func fuzzyMatchTitle(_ title1: String, _ title2: String) -> Bool {
-        // Simple fuzzy matching - remove common suffixes and compare
-        let cleaned1 = title1.trimmingCharacters(in: .whitespaces).replacingOccurrences(of: " •", with: "")
-        let cleaned2 = title2.trimmingCharacters(in: .whitespaces).replacingOccurrences(of: " •", with: "")
-        return cleaned1.contains(cleaned2) || cleaned2.contains(cleaned1)
     }
 
     // MARK: - App Icons

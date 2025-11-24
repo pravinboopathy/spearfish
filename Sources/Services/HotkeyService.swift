@@ -5,8 +5,8 @@
 //  Global keyboard event handling via CGEventTap
 //
 
-import Cocoa
 import Carbon
+import Cocoa
 
 class HotkeyService {
     private let harpoonService: HarpoonService
@@ -55,12 +55,16 @@ class HotkeyService {
     // MARK: - Private Methods
 
     private func checkAccessibility() -> Bool {
-        let options: NSDictionary = [kAXTrustedCheckOptionPrompt.takeRetainedValue() as NSString: false]
+        let options: NSDictionary = [
+            kAXTrustedCheckOptionPrompt.takeRetainedValue() as NSString: false
+        ]
         return AXIsProcessTrustedWithOptions(options)
     }
 
     private func setupEventTap() {
-        let eventMask = (1 << CGEventType.keyDown.rawValue) | (1 << CGEventType.keyUp.rawValue) | (1 << CGEventType.flagsChanged.rawValue)
+        let eventMask =
+            (1 << CGEventType.keyDown.rawValue) | (1 << CGEventType.keyUp.rawValue)
+            | (1 << CGEventType.flagsChanged.rawValue)
 
         // Create event tap callback
         let callback: CGEventTapCallBack = { proxy, type, event, refcon in
@@ -92,7 +96,9 @@ class HotkeyService {
         CGEvent.tapEnable(tap: eventTap, enable: true)
     }
 
-    private func handleEvent(proxy: CGEventTapProxy, type: CGEventType, event: CGEvent) -> Unmanaged<CGEvent>? {
+    private func handleEvent(proxy: CGEventTapProxy, type: CGEventType, event: CGEvent)
+        -> Unmanaged<CGEvent>?
+    {
         // Handle key down events
         if type == .keyDown {
             let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
@@ -124,7 +130,9 @@ class HotkeyService {
             }
 
             // Check for Option+1-9 (quick jump)
-            if flags.contains(.maskAlternate) && !flags.contains(.maskCommand) && !flags.contains(.maskShift) {
+            if flags.contains(.maskAlternate) && !flags.contains(.maskCommand)
+                && !flags.contains(.maskShift)
+            {
                 if let number = getNumberFromKeyCode(keyCode) {
                     handleQuickJump(number)
                     return nil  // Suppress event
@@ -132,7 +140,9 @@ class HotkeyService {
             }
 
             // Check for Option+M (mark current window)
-            if flags.contains(.maskAlternate) && !flags.contains(.maskCommand) && !flags.contains(.maskShift) {
+            if flags.contains(.maskAlternate) && !flags.contains(.maskCommand)
+                && !flags.contains(.maskShift)
+            {
                 if keyCode == Int64(kVK_ANSI_M) {
                     harpoonService.markCurrentWindow()
                     return nil
@@ -140,7 +150,9 @@ class HotkeyService {
             }
 
             // Check for Option+Shift+1-9 (mark to specific position)
-            if flags.contains(.maskAlternate) && flags.contains(.maskShift) && !flags.contains(.maskCommand) {
+            if flags.contains(.maskAlternate) && flags.contains(.maskShift)
+                && !flags.contains(.maskCommand)
+            {
                 if let number = getNumberFromKeyCode(keyCode) {
                     harpoonService.markCurrentWindow(at: number)
                     return nil
