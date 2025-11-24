@@ -7,8 +7,10 @@
 
 import Carbon
 import Cocoa
+import OSLog
 
 class HotkeyService {
+    private let logger = Logger(subsystem: "com.harpoon.mac", category: "HotkeyService")
     private let harpoonService: HarpoonService
     private let appState: AppState
     private var eventTap: CFMachPort?
@@ -23,19 +25,19 @@ class HotkeyService {
 
     func start() {
         let hasAccess = checkAccessibility()
-        print("🔍 Accessibility check result: \(hasAccess)")
+        logger.debug("Accessibility check result: \(hasAccess)")
 
         guard hasAccess else {
-            print("❌ Cannot start hotkey service without Accessibility permissions")
+            logger.error("Cannot start hotkey service without Accessibility permissions")
             return
         }
 
         setupEventTap()
 
         if eventTap != nil {
-            print("✅ Hotkey service started - Event tap created successfully")
+            logger.info("Hotkey service started - Event tap created successfully")
         } else {
-            print("❌ Hotkey service failed - Event tap is nil")
+            logger.error("Hotkey service failed - Event tap is nil")
         }
     }
 
@@ -49,7 +51,7 @@ class HotkeyService {
             CFRunLoopRemoveSource(CFRunLoopGetCurrent(), runLoopSource, .commonModes)
         }
 
-        print("⏸️  Hotkey service stopped")
+        logger.info("Hotkey service stopped")
     }
 
     // MARK: - Private Methods
@@ -84,7 +86,7 @@ class HotkeyService {
         )
 
         guard let eventTap = eventTap else {
-            print("❌ Failed to create event tap")
+            logger.error("Failed to create event tap")
             return
         }
 
@@ -106,9 +108,9 @@ class HotkeyService {
 
             // Check for Option+Tab (toggle picker)
             if flags.contains(.maskAlternate) && !flags.contains(.maskCommand) {
-                print("🎹 Option key pressed with keyCode: \(keyCode), kVK_Tab: \(kVK_Tab)")
+                logger.debug("Option key pressed with keyCode: \(keyCode), kVK_Tab: \(kVK_Tab)")
                 if keyCode == Int64(kVK_Tab) {  // Tab key
-                    print("🎯 Option+Tab detected - toggling picker!")
+                    logger.debug("Option+Tab detected - toggling picker")
                     handleTogglePicker()
                     return nil  // Suppress event
                 }
@@ -165,11 +167,12 @@ class HotkeyService {
     }
 
     private func handleTogglePicker() {
-        print("🔄 handleTogglePicker called")
+        logger.debug("handleTogglePicker called")
         DispatchQueue.main.async { [weak self] in
-            print("📱 About to toggle picker on main thread")
-            self?.appState.togglePicker()
-            print("📱 Picker toggled - isVisible: \(self?.appState.isPickerVisible ?? false)")
+            guard let self = self else { return }
+            self.logger.debug("About to toggle picker on main thread")
+            self.appState.togglePicker()
+            self.logger.debug("Picker toggled - isVisible: \(self.appState.isPickerVisible)")
         }
     }
 

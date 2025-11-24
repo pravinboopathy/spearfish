@@ -7,12 +7,14 @@
 
 import Cocoa
 import ApplicationServices
+import OSLog
 
 // Private Accessibility API for CGWindowID <-> AXUIElement conversion
 @_silgen_name("_AXUIElementGetWindow")
 func _AXUIElementGetWindow(_ element: AXUIElement, _ windowId: UnsafeMutablePointer<CGWindowID>) -> AXError
 
 class WindowService {
+    private let logger = Logger(subsystem: "com.harpoon.mac", category: "WindowService")
     private let iconCache: IconCacheService
 
     init(iconCache: IconCacheService) {
@@ -128,7 +130,7 @@ class WindowService {
         // Find the app by PID
         let runningApps = NSWorkspace.shared.runningApplications
         guard let app = runningApps.first(where: { $0.processIdentifier == windowInfo.pid }) else {
-            print("❌ App not found for PID: \(windowInfo.pid)")
+            logger.error("App not found for PID: \(windowInfo.pid)")
             return
         }
 
@@ -137,14 +139,14 @@ class WindowService {
 
         // Convert CGWindowID to AXUIElement
         guard let axWindow = getAXUIElement(for: windowInfo.cgWindowId, pid: windowInfo.pid) else {
-            print("❌ Window not found: \(windowInfo.cgWindowId)")
+            logger.error("Window not found: \(windowInfo.cgWindowId)")
             return
         }
 
         // Focus and raise the window
         AXUIElementSetAttributeValue(axWindow, kAXMainAttribute as CFString, true as CFTypeRef)
         AXUIElementPerformAction(axWindow, kAXRaiseAction as CFString)
-        print("✅ Activated window: \(windowInfo.title)")
+        logger.info("Activated window: \(windowInfo.title)")
     }
 
     // MARK: - Window Validation

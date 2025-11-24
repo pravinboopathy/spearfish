@@ -8,8 +8,10 @@
 import Cocoa
 import Combine
 import SwiftUI
+import OSLog
 
 class AppDelegate: NSObject, NSApplicationDelegate {
+    private let logger = Logger(subsystem: "com.harpoon.mac", category: "AppDelegate")
     var statusItem: NSStatusItem?
     var appState: AppState?
     var pickerWindowController: PickerWindowController?
@@ -21,7 +23,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var iconCacheService: IconCacheService?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        print("🎯 Harpoon macOS starting...")
+        logger.info("Harpoon macOS starting")
 
         // Initialize app state
         appState = AppState()
@@ -35,7 +37,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Check for Accessibility permissions
         checkAccessibilityPermissions()
 
-        print("✅ Harpoon macOS ready")
+        logger.info("Harpoon macOS ready")
     }
 
     func setupServices() {
@@ -66,19 +68,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func setupPickerObserver() {
-        print("🎬 Setting up picker observer")
+        logger.debug("Setting up picker observer")
         // Observe picker visibility changes
         appState?.$isPickerVisible.sink { [weak self] isVisible in
-            print("👀 Picker visibility changed to: \(isVisible)")
+            self?.logger.debug("Picker visibility changed to: \(isVisible)")
             if isVisible {
-                print("📂 Calling pickerWindowController.show()")
+                self?.logger.debug("Calling pickerWindowController.show()")
                 self?.pickerWindowController?.show()
             } else {
-                print("📪 Calling pickerWindowController.hide()")
+                self?.logger.debug("Calling pickerWindowController.hide()")
                 self?.pickerWindowController?.hide()
             }
         }.store(in: &cancellables)
-        print("🎬 Picker observer setup complete")
+        logger.debug("Picker observer setup complete")
     }
 
     private var cancellables = Set<AnyCancellable>()
@@ -118,10 +120,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let trusted = AXIsProcessTrusted()
 
         if !trusted {
-            print("⚠️  Accessibility permissions not granted")
+            logger.error("Accessibility permissions not granted")
             showAccessibilityAlert()
         } else {
-            print("✅ Accessibility permissions granted")
+            logger.info("Accessibility permissions granted")
         }
     }
 

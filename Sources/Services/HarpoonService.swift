@@ -6,8 +6,10 @@
 //
 
 import Foundation
+import OSLog
 
 class HarpoonService {
+    private let logger = Logger(subsystem: "com.harpoon.mac", category: "HarpoonService")
     private let windowService: WindowService
     private var pinnedWindows: [HarpoonWindow] = []
     private weak var appState: AppState?
@@ -25,14 +27,14 @@ class HarpoonService {
 
     func markCurrentWindow() {
         guard let currentWindow = windowService.getCurrentWindow() else {
-            print("❌ No current window to mark")
+            logger.error("No current window to mark")
             return
         }
 
         // Find first empty slot (position 1-9)
         let existingPositions = Set(pinnedWindows.map { $0.position })
         guard let nextPosition = (1...9).first(where: { !existingPositions.contains($0) }) else {
-            print("❌ All harpoon slots are full")
+            logger.error("All harpoon slots are full")
             return
         }
 
@@ -41,12 +43,12 @@ class HarpoonService {
 
     func markCurrentWindow(at position: Int) {
         guard position >= 1 && position <= 9 else {
-            print("❌ Invalid position: \(position)")
+            logger.error("Invalid position: \(position)")
             return
         }
 
         guard let currentWindow = windowService.getCurrentWindow() else {
-            print("❌ No current window to mark")
+            logger.error("No current window to mark")
             return
         }
 
@@ -67,24 +69,24 @@ class HarpoonService {
         // Save to config
         savePinnedWindows()
 
-        print("✅ Marked window '\(windowInfo.title)' at position \(position)")
+        logger.info("Marked window '\(windowInfo.title)' at position \(position)")
     }
 
     func removeWindow(at position: Int) {
         pinnedWindows.removeAll { $0.position == position }
         savePinnedWindows()
-        print("✅ Removed window at position \(position)")
+        logger.info("Removed window at position \(position)")
     }
 
     func jumpToWindow(at position: Int) {
         guard let harpoonWindow = pinnedWindows.first(where: { $0.position == position }) else {
-            print("❌ No window at position \(position)")
+            logger.error("No window at position \(position)")
             return
         }
 
         // Check if window still exists
         guard windowService.isWindowValid(harpoonWindow.cgWindowId) else {
-            print("❌ Window no longer exists: \(harpoonWindow.windowTitle)")
+            logger.error("Window no longer exists: \(harpoonWindow.windowTitle)")
             // Remove from list
             removeWindow(at: position)
             return
@@ -119,7 +121,7 @@ class HarpoonService {
             let removedCount = pinnedWindows.count - validWindows.count
             pinnedWindows = validWindows
             savePinnedWindows()
-            print("ℹ️  Cleaned up \(removedCount) closed windows")
+            logger.info("Cleaned up \(removedCount) closed windows")
         }
     }
 

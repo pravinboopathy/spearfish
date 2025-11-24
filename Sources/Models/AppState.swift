@@ -7,8 +7,10 @@
 
 import Foundation
 import SwiftUI
+import OSLog
 
 class AppState: ObservableObject {
+    private let logger = Logger(subsystem: "com.harpoon.mac", category: "AppState")
     @Published var isPickerVisible: Bool = false
     @Published var pinnedWindows: [HarpoonWindow] = []
 
@@ -16,20 +18,20 @@ class AppState: ObservableObject {
     var pickerWindow: NSWindow?
 
     func showPicker() {
-        print("✨ AppState.showPicker called")
+        logger.debug("AppState.showPicker called")
         isPickerVisible = true
-        print("✨ isPickerVisible set to true")
+        logger.debug("isPickerVisible set to true")
     }
 
     func hidePicker() {
-        print("🔻 AppState.hidePicker called")
+        logger.debug("AppState.hidePicker called")
         isPickerVisible = false
         pickerWindow?.orderOut(nil)
-        print("🔻 isPickerVisible set to false")
+        logger.debug("isPickerVisible set to false")
     }
 
     func togglePicker() {
-        print("🔀 AppState.togglePicker called - current state: \(isPickerVisible)")
+        logger.debug("AppState.togglePicker called - current state: \(self.isPickerVisible)")
         if isPickerVisible {
             hidePicker()
         } else {
