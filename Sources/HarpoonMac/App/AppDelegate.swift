@@ -6,8 +6,8 @@
 //
 
 import Cocoa
-import SwiftUI
 import Combine
+import SwiftUI
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem?
@@ -105,10 +105,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func setupMenu() {
         let menu = NSMenu()
 
-        menu.addItem(NSMenuItem(title: "Mark Current Window", action: #selector(markCurrentWindow), keyEquivalent: "m"))
-        menu.addItem(NSMenuItem(title: "Show Harpoon Picker", action: #selector(showPicker), keyEquivalent: "h"))
+        menu.addItem(
+            NSMenuItem(
+                title: "Mark Current Window", action: #selector(markCurrentWindow),
+                keyEquivalent: "m"))
+        menu.addItem(
+            NSMenuItem(
+                title: "Show Harpoon Picker", action: #selector(showPicker), keyEquivalent: "h"))
         menu.addItem(NSMenuItem.separator())
-        menu.addItem(NSMenuItem(title: "Settings", action: #selector(showSettings), keyEquivalent: ","))
+        menu.addItem(
+            NSMenuItem(title: "Settings", action: #selector(showSettings), keyEquivalent: ","))
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: "Quit Harpoon", action: #selector(quit), keyEquivalent: "q"))
 
@@ -129,7 +135,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func showAccessibilityAlert() {
         let alert = NSAlert()
         alert.messageText = "Accessibility Permission Required"
-        alert.informativeText = "Harpoon needs Accessibility permissions to manage windows. Please grant permission in System Preferences."
+        alert.informativeText =
+            "Harpoon needs Accessibility permissions to manage windows. Please grant permission in System Preferences."
         alert.alertStyle = .warning
         alert.addButton(withTitle: "Open System Preferences")
         alert.addButton(withTitle: "Quit")
@@ -138,7 +145,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         if response == .alertFirstButtonReturn {
             // Open System Preferences
-            let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!
+            let url = URL(
+                string:
+                    "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!
             NSWorkspace.shared.open(url)
         } else {
             NSApplication.shared.terminate(nil)

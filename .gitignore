@@ -1,1 +1,9 @@
-HarpoonMac.xcodeproj/project.xcworkspace/xcuserdata/pravinboopathy.xcuserdatad/UserInterfaceState.xcuserstate
+# Xcode
+*.xcodeproj
+*.xcworkspace
+xcuserdata/
+*.xcuserstate
+
+# SPM
+.build
+.swiftpm
