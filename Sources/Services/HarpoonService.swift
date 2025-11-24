@@ -9,17 +9,12 @@ import Foundation
 
 class HarpoonService {
     private let windowService: WindowService
-    private let configService: ConfigService
     private var pinnedWindows: [HarpoonWindow] = []
     private weak var appState: AppState?
 
-    init(windowService: WindowService, configService: ConfigService, appState: AppState? = nil) {
+    init(windowService: WindowService, appState: AppState? = nil) {
         self.windowService = windowService
-        self.configService = configService
         self.appState = appState
-
-        // Load pinned windows from config
-        loadPinnedWindows()
     }
 
     // MARK: - Public API
@@ -118,14 +113,9 @@ class HarpoonService {
 
     // MARK: - Private Methods
 
-    private func loadPinnedWindows() {
-        let config = configService.loadConfig()
-        pinnedWindows = config.pinnedWindows
-        print("✅ Loaded \(pinnedWindows.count) pinned windows")
-    }
-
     private func savePinnedWindows() {
-        configService.updatePinnedWindows(pinnedWindows)
+        // Update app state to reflect changes
         appState?.updatePinnedWindows(pinnedWindows)
+        // TODO: Persist to disk when StorageService is implemented
     }
 }
