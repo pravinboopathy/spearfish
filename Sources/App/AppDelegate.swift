@@ -17,6 +17,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var pickerWindowController: PickerWindowController?
 
     // Services
+    var configurationService: ConfigurationService?
     var windowService: WindowService?
     var harpoonService: HarpoonService?
     var hotkeyService: HotkeyService?
@@ -42,6 +43,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func setupServices() {
         // Initialize services in dependency order
+        configurationService = ConfigurationService()
         iconCacheService = IconCacheService()
         windowService = WindowService(iconCache: iconCacheService!)
         harpoonService = HarpoonService(
@@ -50,12 +52,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         )
         hotkeyService = HotkeyService(
             harpoonService: harpoonService!,
-            appState: appState!
+            appState: appState!,
+            configurationService: configurationService!
         )
 
         // Initialize picker window controller
         pickerWindowController = PickerWindowController(
             appState: appState!,
+            configurationService: configurationService!,
             harpoonService: harpoonService!,
             windowService: windowService!
         )

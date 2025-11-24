@@ -9,6 +9,7 @@ import SwiftUI
 
 struct PickerView: View {
     @ObservedObject var appState: AppState
+    @ObservedObject var configurationService: ConfigurationService
     let harpoonService: HarpoonService
     let windowService: WindowService
 
@@ -40,6 +41,30 @@ struct PickerView: View {
                 }
             }
             .padding()
+
+            // Footer with keybind hints
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Press 1-9 to jump • ⎋ to cancel")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                HStack(spacing: 12) {
+                    KeybindHint(
+                        label: "Toggle",
+                        keybind: configurationService.configuration.togglePickerDisplayString()
+                    )
+                    KeybindHint(
+                        label: "Mark",
+                        keybind: configurationService.configuration.markWindowDisplayString()
+                    )
+                    KeybindHint(
+                        label: "Quick Jump",
+                        keybind: configurationService.configuration.quickJumpDisplayString()
+                    )
+                }
+                .font(.caption2)
+            }
+            .padding()
+            .background(Color.black.opacity(0.2))
         }
         .frame(width: 400)
         .background(.ultraThinMaterial)  // GPU-accelerated blur
@@ -49,14 +74,40 @@ struct PickerView: View {
     }
 }
 
+struct KeybindHint: View {
+    let label: String
+    let keybind: String
+
+    var body: some View {
+        HStack(spacing: 4) {
+            Text(label)
+                .foregroundColor(.secondary)
+            Text(keybind)
+                .foregroundColor(.white)
+                .fontWeight(.medium)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(Color.white.opacity(0.1))
+                .cornerRadius(4)
+        }
+    }
+}
+
 class PickerWindowController {
     private var window: NSWindow?
     private let appState: AppState
+    private let configurationService: ConfigurationService
     private let harpoonService: HarpoonService
     private let windowService: WindowService
 
-    init(appState: AppState, harpoonService: HarpoonService, windowService: WindowService) {
+    init(
+        appState: AppState,
+        configurationService: ConfigurationService,
+        harpoonService: HarpoonService,
+        windowService: WindowService
+    ) {
         self.appState = appState
+        self.configurationService = configurationService
         self.harpoonService = harpoonService
         self.windowService = windowService
     }
@@ -78,12 +129,13 @@ class PickerWindowController {
     private func createWindow() {
         let contentView = PickerView(
             appState: appState,
+            configurationService: configurationService,
             harpoonService: harpoonService,
             windowService: windowService
         )
 
         window = NSWindow(
-            contentRect: NSRect(x: 0, y: 0, width: 400, height: 600),
+            contentRect: NSRect(x: 0, y: 0, width: 400, height: 650),
             styleMask: [.borderless],
             backing: .buffered,
             defer: false

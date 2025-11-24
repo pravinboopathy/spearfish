@@ -7,18 +7,25 @@
 
 import Carbon
 import Cocoa
+import Combine
 import OSLog
 
 class HotkeyService {
     private let logger = Logger(subsystem: "com.harpoon.mac", category: "HotkeyService")
     private let harpoonService: HarpoonService
     private let appState: AppState
+    private let configurationService: ConfigurationService
     private var eventTap: CFMachPort?
     private var runLoopSource: CFRunLoopSource?
+    private var cancellables = Set<AnyCancellable>()
 
-    init(harpoonService: HarpoonService, appState: AppState) {
+    init(harpoonService: HarpoonService, appState: AppState, configurationService: ConfigurationService) {
         self.harpoonService = harpoonService
         self.appState = appState
+        self.configurationService = configurationService
+
+        // Observe configuration changes and restart event tap
+        setupConfigurationObserver()
     }
 
     // MARK: - Public API
@@ -55,6 +62,22 @@ class HotkeyService {
     }
 
     // MARK: - Private Methods
+
+    private func setupConfigurationObserver() {
+        configurationService.$configuration
+            .dropFirst() // Skip initial value
+            .sink { [weak self] _ in
+                self?.logger.info("Configuration changed - restarting event tap")
+                self?.restart()
+            }
+            .store(in: &cancellables)
+    }
+
+    private func restart() {
+        logger.debug("Restarting hotkey service")
+        stop()
+        start()
+    }
 
     private func checkAccessibility() -> Bool {
         let options: NSDictionary = [
@@ -105,12 +128,12 @@ class HotkeyService {
         if type == .keyDown {
             let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
             let flags = event.flags
+            let config = configurationService.configuration
 
-            // Check for Option+Tab (toggle picker)
-            if flags.contains(.maskAlternate) && !flags.contains(.maskCommand) {
-                logger.debug("Option key pressed with keyCode: \(keyCode), kVK_Tab: \(kVK_Tab)")
-                if keyCode == Int64(kVK_Tab) {  // Tab key
-                    logger.debug("Option+Tab detected - toggling picker")
+            // Check for toggle picker (leader + toggle key)
+            if config.matchesLeader(flags) {
+                if keyCode == config.togglePickerKey.cgKeyCode {
+                    logger.debug("Toggle picker keybind detected")
                     handleTogglePicker()
                     return nil  // Suppress event
                 }
@@ -131,30 +154,24 @@ class HotkeyService {
                 }
             }
 
-            // Check for Option+1-9 (quick jump)
-            if flags.contains(.maskAlternate) && !flags.contains(.maskCommand)
-                && !flags.contains(.maskShift)
-            {
+            // Check for quick jump (leader + additional modifiers + 1-9)
+            if config.matchesModifiers(flags, additional: config.quickJumpModifiers) {
                 if let number = getNumberFromKeyCode(keyCode) {
                     handleQuickJump(number)
                     return nil  // Suppress event
                 }
             }
 
-            // Check for Option+M (mark current window)
-            if flags.contains(.maskAlternate) && !flags.contains(.maskCommand)
-                && !flags.contains(.maskShift)
-            {
-                if keyCode == Int64(kVK_ANSI_M) {
+            // Check for mark current window (leader + mark key)
+            if config.matchesLeader(flags) {
+                if keyCode == config.markWindowKey.cgKeyCode {
                     harpoonService.markCurrentWindow()
                     return nil
                 }
             }
 
-            // Check for Option+Shift+1-9 (mark to specific position)
-            if flags.contains(.maskAlternate) && flags.contains(.maskShift)
-                && !flags.contains(.maskCommand)
-            {
+            // Check for mark to specific position (leader + additional modifiers + 1-9)
+            if config.matchesModifiers(flags, additional: config.markToPositionModifiers) {
                 if let number = getNumberFromKeyCode(keyCode) {
                     harpoonService.markCurrentWindow(at: number)
                     return nil
