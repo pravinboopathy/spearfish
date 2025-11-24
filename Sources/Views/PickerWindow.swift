@@ -36,7 +36,10 @@ struct PickerView: View {
                             icon: windowService.getIcon(for: window.bundleId)
                         )
                     } else {
-                        EmptySlotView(position: position)
+                        EmptySlotView(
+                            position: position,
+                            markKeybind: configurationService.configuration.markWindowDisplayString()
+                        )
                     }
                 }
             }
@@ -134,18 +137,21 @@ class PickerWindowController {
             windowService: windowService
         )
 
-        window = NSWindow(
+        let panel = NSPanel(
             contentRect: NSRect(x: 0, y: 0, width: 400, height: 650),
-            styleMask: [.borderless],
+            styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
             defer: false
         )
 
-        window?.isOpaque = false
-        window?.backgroundColor = .clear
-        window?.level = .floating
-        window?.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
-        window?.contentView = NSHostingView(rootView: contentView)
+        panel.isOpaque = false
+        panel.backgroundColor = .clear
+        panel.level = .popUpMenu  // Higher level to stay above screenshot tool
+        panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary]
+        panel.hidesOnDeactivate = false  // Don't hide when app loses focus
+        panel.contentView = NSHostingView(rootView: contentView)
+
+        window = panel
 
         // Store window reference in app state
         appState.pickerWindow = window

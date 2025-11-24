@@ -58,6 +58,7 @@ struct WindowCardView: View {
 
 struct EmptySlotView: View {
     let position: Int
+    let markKeybind: String
 
     var body: some View {
         HStack(spacing: 12) {
@@ -74,7 +75,7 @@ struct EmptySlotView: View {
                 .foregroundColor(.gray.opacity(0.3))
 
             // Placeholder text
-            Text("Empty - Press ⌘⇧M to mark a window")
+            Text("Empty - Press \(markKeybind) to mark a window")
                 .font(.system(size: 12))
                 .foregroundColor(.white.opacity(0.5))
                 .lineLimit(1)
@@ -106,7 +107,7 @@ struct WindowCardView_Previews: PreviewProvider {
                 icon: NSImage(systemSymbolName: "app.fill", accessibilityDescription: "App")
             )
 
-            EmptySlotView(position: 2)
+            EmptySlotView(position: 2, markKeybind: "⌥M")
         }
         .frame(width: 400)
         .padding()
