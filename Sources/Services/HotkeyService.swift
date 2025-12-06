@@ -164,7 +164,12 @@ class HotkeyService {
 
     /// Handle keys when picker is visible (1-9 to jump, Escape to close)
     private func handlePickerVisibleKeys(keyCode: Int64, event: CGEvent) -> Unmanaged<CGEvent>? {
-        if let number = getNumberFromKeyCode(keyCode) {
+        let flags = event.flags
+
+        // Let number keys pass through if Command or Shift is pressed (e.g., Cmd+Shift+4 for screenshot)
+        let hasOtherModifiers = flags.contains(.maskCommand) || flags.contains(.maskShift)
+
+        if let number = getNumberFromKeyCode(keyCode), !hasOtherModifiers {
             DispatchQueue.main.async { [weak self] in
                 self?.harpoonService.jumpToWindow(at: number)
                 self?.appState.hidePicker()
