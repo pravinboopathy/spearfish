@@ -194,11 +194,15 @@ class HotkeyService {
     }
 
     private func handleNumberKey(_ number: Int) {
-        harpoonService.jumpToWindow(at: number)
+        DispatchQueue.main.async { [weak self] in
+            self?.harpoonService.jumpToWindow(at: number)
+        }
     }
 
     private func handleQuickJump(_ number: Int) {
-        harpoonService.jumpToWindow(at: number)
+        DispatchQueue.main.async { [weak self] in
+            self?.harpoonService.jumpToWindow(at: number)
+        }
     }
 
     private func getNumberFromKeyCode(_ keyCode: Int64) -> Int? {
