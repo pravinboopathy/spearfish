@@ -144,8 +144,16 @@ class WindowService {
         }
 
         // Focus and raise the window
-        AXUIElementSetAttributeValue(axWindow, kAXMainAttribute as CFString, true as CFTypeRef)
-        AXUIElementPerformAction(axWindow, kAXRaiseAction as CFString)
+        let setMainResult = AXUIElementSetAttributeValue(axWindow, kAXMainAttribute as CFString, true as CFTypeRef)
+        if setMainResult != .success {
+            logger.warning("Failed to set main attribute: \(setMainResult.rawValue)")
+        }
+
+        let raiseResult = AXUIElementPerformAction(axWindow, kAXRaiseAction as CFString)
+        if raiseResult != .success {
+            logger.warning("Failed to raise window: \(raiseResult.rawValue)")
+        }
+
         logger.info("Activated window: \(windowInfo.title)")
     }
 
