@@ -99,7 +99,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
 
         if let button = statusItem?.button {
-            // TODO: Add custom icon
             button.image = NSImage(systemSymbolName: "target", accessibilityDescription: "Harpoon")
             button.action = #selector(menuBarIconClicked)
         }
@@ -175,8 +174,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc func showSettings() {
-        // TODO: Implement settings window
-        print("Settings not yet implemented")
+        logger.info("Settings not yet implemented")
     }
 
     @objc func quit() {
