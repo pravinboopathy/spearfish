@@ -19,14 +19,15 @@ enum UIConstants {
     }
 
     enum Card {
-        static let height: CGFloat = 72
+        static let height: CGFloat = 64
+        static let emptyHeight: CGFloat = 44
         static let spacing: CGFloat = 12
         static let padding: CGFloat = 12
-        static let cornerRadius: CGFloat = 8
-        static let positionFontSize: CGFloat = 24
-        static let positionWidth: CGFloat = 40
-        static let titleFontSize: CGFloat = 14
-        static let subtitleFontSize: CGFloat = 12
+        static let cornerRadius: CGFloat = 10
+        static let positionFontSize: CGFloat = 20
+        static let positionWidth: CGFloat = 32
+        static let titleFontSize: CGFloat = 13
+        static let subtitleFontSize: CGFloat = 11
     }
 
     enum Toast {
