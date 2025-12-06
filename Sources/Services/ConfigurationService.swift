@@ -11,7 +11,6 @@ import OSLog
 
 class ConfigurationService: ObservableObject {
     private let logger = Logger(subsystem: "com.harpoon.mac", category: "ConfigurationService")
-    private let userDefaultsKey = "com.harpoon.mac.keybindConfiguration"
 
     @Published private(set) var configuration: KeybindConfiguration {
         didSet {
@@ -19,15 +18,26 @@ class ConfigurationService: ObservableObject {
         }
     }
 
+    // MARK: - Config File Paths
+
+    private static var configDirectoryURL: URL {
+        FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent(".config/harpoon_mac")
+    }
+
+    private static var configFileURL: URL {
+        configDirectoryURL.appendingPathComponent("config.json")
+    }
+
     // MARK: - Initialization
 
     init() {
-        // Load configuration from UserDefaults or use default
-        if let data = UserDefaults.standard.data(forKey: userDefaultsKey),
+        // Load configuration from file or use default
+        if let data = try? Data(contentsOf: Self.configFileURL),
            let decoded = try? JSONDecoder().decode(KeybindConfiguration.self, from: data)
         {
             self.configuration = decoded
-            logger.info("Loaded configuration from UserDefaults")
+            logger.info("Loaded configuration from \(Self.configFileURL.path)")
         } else {
             self.configuration = .default
             logger.info("Using default configuration")
@@ -57,14 +67,27 @@ class ConfigurationService: ObservableObject {
 
     // MARK: - Private Methods
 
-    private func saveConfiguration() {
-        guard let encoded = try? JSONEncoder().encode(configuration) else {
-            logger.error("Failed to encode configuration")
-            return
+    private func ensureConfigDirectoryExists() throws {
+        let fileManager = FileManager.default
+        if !fileManager.fileExists(atPath: Self.configDirectoryURL.path) {
+            try fileManager.createDirectory(at: Self.configDirectoryURL, withIntermediateDirectories: true)
+            logger.debug("Created config directory at \(Self.configDirectoryURL.path)")
         }
+    }
 
-        UserDefaults.standard.set(encoded, forKey: userDefaultsKey)
-        logger.debug("Configuration saved to UserDefaults")
+    private func saveConfiguration() {
+        do {
+            try ensureConfigDirectoryExists()
+
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+            let data = try encoder.encode(configuration)
+
+            try data.write(to: Self.configFileURL, options: .atomic)
+            logger.debug("Configuration saved to \(Self.configFileURL.path)")
+        } catch {
+            logger.error("Failed to save configuration: \(error.localizedDescription)")
+        }
     }
 
     // MARK: - Error Types
