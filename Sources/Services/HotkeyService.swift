@@ -121,89 +121,111 @@ class HotkeyService {
         CGEvent.tapEnable(tap: eventTap, enable: true)
     }
 
+    // MARK: - Event Handling
+
     private func handleEvent(proxy: CGEventTapProxy, type: CGEventType, event: CGEvent)
         -> Unmanaged<CGEvent>?
     {
-        // Handle key down events
-        if type == .keyDown {
-            let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-            let flags = event.flags
-            let config = configurationService.configuration
-
-            // Check for toggle picker (leader + toggle key)
-            if config.matchesLeader(flags) {
-                if keyCode == config.togglePickerKey.cgKeyCode {
-                    logger.debug("Toggle picker keybind detected")
-                    handleTogglePicker()
-                    return nil  // Suppress event
-                }
-            }
-
-            // Check for number keys when picker is visible
-            if appState.isPickerVisible {
-                if let number = getNumberFromKeyCode(keyCode) {
-                    handleNumberKey(number)
-                    appState.hidePicker()
-                    return nil  // Suppress event
-                }
-
-                // Handle Escape to close picker
-                if keyCode == Int64(kVK_Escape) {
-                    appState.hidePicker()
-                    return nil
-                }
-            }
-
-            // Check for quick jump (leader + additional modifiers + 1-9)
-            if config.matchesModifiers(flags, additional: config.quickJumpModifiers) {
-                if let number = getNumberFromKeyCode(keyCode) {
-                    handleQuickJump(number)
-                    return nil  // Suppress event
-                }
-            }
-
-            // Check for mark current window (leader + mark key)
-            if config.matchesLeader(flags) {
-                if keyCode == config.markWindowKey.cgKeyCode {
-                    harpoonService.markCurrentWindow()
-                    return nil
-                }
-            }
-
-            // Check for mark to specific position (leader + additional modifiers + 1-9)
-            if config.matchesModifiers(flags, additional: config.markToPositionModifiers) {
-                if let number = getNumberFromKeyCode(keyCode) {
-                    harpoonService.markCurrentWindow(at: number)
-                    return nil
-                }
-            }
+        guard type == .keyDown else {
+            return Unmanaged.passUnretained(event)
         }
 
-        // Pass through other events
+        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
+        let flags = event.flags
+
+        // Priority order: toggle picker -> picker keys -> quick jump -> mark window -> mark position
+        if handleTogglePickerKey(keyCode: keyCode, flags: flags) { return nil }
+        if appState.isPickerVisible {
+            return handlePickerVisibleKeys(keyCode: keyCode, event: event)
+        }
+        if handleQuickJump(keyCode: keyCode, flags: flags) { return nil }
+        if handleMarkWindowKey(keyCode: keyCode, flags: flags) { return nil }
+        if handleMarkToPosition(keyCode: keyCode, flags: flags) { return nil }
+
         return Unmanaged.passUnretained(event)
     }
 
-    private func handleTogglePicker() {
-        logger.debug("handleTogglePicker called")
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.logger.debug("About to toggle picker on main thread")
-            self.appState.togglePicker()
-            self.logger.debug("Picker toggled - isVisible: \(self.appState.isPickerVisible)")
+    // MARK: - Key Handlers
+
+    /// Handle leader + toggle key to show/hide picker
+    private func handleTogglePickerKey(keyCode: Int64, flags: CGEventFlags) -> Bool {
+        let config = configurationService.configuration
+        guard config.matchesLeader(flags),
+              keyCode == config.togglePickerKey.cgKeyCode else {
+            return false
         }
+
+        logger.debug("Toggle picker keybind detected")
+        DispatchQueue.main.async { [weak self] in
+            self?.appState.togglePicker()
+        }
+        return true
     }
 
-    private func handleNumberKey(_ number: Int) {
+    /// Handle keys when picker is visible (1-9 to jump, Escape to close)
+    private func handlePickerVisibleKeys(keyCode: Int64, event: CGEvent) -> Unmanaged<CGEvent>? {
+        if let number = getNumberFromKeyCode(keyCode) {
+            DispatchQueue.main.async { [weak self] in
+                self?.harpoonService.jumpToWindow(at: number)
+                self?.appState.hidePicker()
+            }
+            return nil
+        }
+
+        if keyCode == Int64(kVK_Escape) {
+            DispatchQueue.main.async { [weak self] in
+                self?.appState.hidePicker()
+            }
+            return nil
+        }
+
+        // Let other keys pass through
+        return Unmanaged.passUnretained(event)
+    }
+
+    /// Handle leader + number for quick jump (when picker is NOT visible)
+    private func handleQuickJump(keyCode: Int64, flags: CGEventFlags) -> Bool {
+        let config = configurationService.configuration
+        guard config.matchesModifiers(flags, additional: config.quickJumpModifiers),
+              let number = getNumberFromKeyCode(keyCode) else {
+            return false
+        }
+
         DispatchQueue.main.async { [weak self] in
             self?.harpoonService.jumpToWindow(at: number)
         }
+        return true
     }
 
-    private func handleQuickJump(_ number: Int) {
-        DispatchQueue.main.async { [weak self] in
-            self?.harpoonService.jumpToWindow(at: number)
+    /// Handle leader + mark key to mark current window
+    private func handleMarkWindowKey(keyCode: Int64, flags: CGEventFlags) -> Bool {
+        let config = configurationService.configuration
+        guard config.matchesLeader(flags),
+              keyCode == config.markWindowKey.cgKeyCode else {
+            return false
         }
+
+        DispatchQueue.main.async { [weak self] in
+            self?.harpoonService.markCurrentWindow()
+        }
+        return true
     }
+
+    /// Handle leader + shift + number to mark window at specific position
+    private func handleMarkToPosition(keyCode: Int64, flags: CGEventFlags) -> Bool {
+        let config = configurationService.configuration
+        guard config.matchesModifiers(flags, additional: config.markToPositionModifiers),
+              let number = getNumberFromKeyCode(keyCode) else {
+            return false
+        }
+
+        DispatchQueue.main.async { [weak self] in
+            self?.harpoonService.markCurrentWindow(at: number)
+        }
+        return true
+    }
+
+    // MARK: - Helpers
 
     private func getNumberFromKeyCode(_ keyCode: Int64) -> Int? {
         switch keyCode {
