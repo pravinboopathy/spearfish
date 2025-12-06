@@ -13,6 +13,7 @@ class AppState: ObservableObject {
     private let logger = Logger(subsystem: "com.harpoon.mac", category: "AppState")
     @Published var isPickerVisible: Bool = false
     @Published var pinnedWindows: [HarpoonWindow] = []
+    @Published var currentToast: Toast? = nil
 
     // Picker window reference
     var pickerWindow: NSWindow?
@@ -41,5 +42,16 @@ class AppState: ObservableObject {
 
     func updatePinnedWindows(_ windows: [HarpoonWindow]) {
         pinnedWindows = windows
+    }
+
+    // MARK: - Toast Management
+
+    func showToast(_ toast: Toast) {
+        logger.debug("Showing toast: \(toast.message)")
+        currentToast = toast
+    }
+
+    func dismissToast() {
+        currentToast = nil
     }
 }

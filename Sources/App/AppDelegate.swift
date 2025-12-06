@@ -15,6 +15,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem?
     var appState: AppState?
     var pickerWindowController: PickerWindowController?
+    var toastWindowController: ToastWindowController?
 
     // Services
     var configurationService: ConfigurationService?
@@ -58,6 +59,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             harpoonService: harpoon,
             windowService: window
         )
+        let toast = ToastWindowController(appState: appState!)
 
         // Assign to instance properties
         configurationService = config
@@ -66,6 +68,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         harpoonService = harpoon
         hotkeyService = hotkey
         pickerWindowController = picker
+        toastWindowController = toast
 
         // Start hotkey monitoring
         hotkeyService?.start()

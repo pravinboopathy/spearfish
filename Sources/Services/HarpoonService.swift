@@ -28,6 +28,7 @@ class HarpoonService {
     func markCurrentWindow() {
         guard let currentWindow = windowService.getCurrentWindow() else {
             logger.error("No current window to mark")
+            appState?.showToast(.error("No focused window to mark"))
             return
         }
 
@@ -35,6 +36,7 @@ class HarpoonService {
         let existingPositions = Set(pinnedWindows.map { $0.position })
         guard let nextPosition = (1...9).first(where: { !existingPositions.contains($0) }) else {
             logger.error("All harpoon slots are full")
+            appState?.showToast(.error("All slots full (1-9)"))
             return
         }
 
@@ -44,11 +46,13 @@ class HarpoonService {
     func markCurrentWindow(at position: Int) {
         guard position >= 1 && position <= 9 else {
             logger.error("Invalid position: \(position)")
+            appState?.showToast(.error("Invalid position: \(position)"))
             return
         }
 
         guard let currentWindow = windowService.getCurrentWindow() else {
             logger.error("No current window to mark")
+            appState?.showToast(.error("No focused window to mark"))
             return
         }
 
@@ -70,6 +74,7 @@ class HarpoonService {
         savePinnedWindows()
 
         logger.info("Marked window '\(windowInfo.title)' at position \(position)")
+        appState?.showToast(.success("Marked to position \(position)"))
     }
 
     func removeWindow(at position: Int) {
@@ -81,12 +86,14 @@ class HarpoonService {
     func jumpToWindow(at position: Int) {
         guard let harpoonWindow = pinnedWindows.first(where: { $0.position == position }) else {
             logger.error("No window at position \(position)")
+            appState?.showToast(.error("No window at position \(position)"))
             return
         }
 
         // Check if window still exists
         guard windowService.isWindowValid(harpoonWindow.cgWindowId) else {
             logger.error("Window no longer exists: \(harpoonWindow.windowTitle)")
+            appState?.showToast(.error("Window no longer exists"))
             // Remove from list
             removeWindow(at: position)
             return
