@@ -20,7 +20,7 @@ struct PickerView: View {
                 Image(systemName: "scope")
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(.white.opacity(0.9))
-                Text("Harpoon")
+                Text("HarpoonMac")
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundColor(.white.opacity(0.9))
                 Spacer()
