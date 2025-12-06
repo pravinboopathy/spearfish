@@ -9,7 +9,7 @@ import Cocoa
 import ApplicationServices
 import OSLog
 
-// Private Accessibility API for CGWindowID <-> AXUIElement conversion
+// Private API to convert AXUIElement to CGWindowID (no public alternative exists)
 @_silgen_name("_AXUIElementGetWindow")
 func _AXUIElementGetWindow(_ element: AXUIElement, _ windowId: UnsafeMutablePointer<CGWindowID>) -> AXError
 
