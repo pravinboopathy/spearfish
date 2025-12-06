@@ -119,10 +119,11 @@ class HarpoonService {
     }
 
     func validateWindows() {
-        // Remove windows that no longer exist
-        let validWindows = pinnedWindows.filter { window in
-            windowService.isWindowValid(window.cgWindowId)
-        }
+        // Query window list once and build set of valid IDs
+        let validWindowIds = Set(windowService.getAllWindows().map { $0.cgWindowId })
+
+        // Filter pinned windows against the set
+        let validWindows = pinnedWindows.filter { validWindowIds.contains($0.cgWindowId) }
 
         if validWindows.count != pinnedWindows.count {
             let removedCount = pinnedWindows.count - validWindows.count
