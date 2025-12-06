@@ -82,13 +82,12 @@ class IconCacheService {
     }
 
     private func resizeIcon(_ icon: NSImage, to size: NSSize) -> NSImage {
-        let resized = NSImage(size: size)
-        resized.lockFocus()
-        icon.draw(in: NSRect(origin: .zero, size: size),
-                 from: NSRect(origin: .zero, size: icon.size),
-                 operation: .copy,
-                 fraction: 1.0)
-        resized.unlockFocus()
-        return resized
+        return NSImage(size: size, flipped: false) { rect in
+            icon.draw(in: rect,
+                      from: NSRect(origin: .zero, size: icon.size),
+                      operation: .copy,
+                      fraction: 1.0)
+            return true
+        }
     }
 }
