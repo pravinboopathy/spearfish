@@ -55,10 +55,10 @@ struct KeybindConfiguration: Codable, Equatable {
 
         var displayName: String {
             switch self {
-            case .option: return "⌥ Option"
-            case .control: return "⌃ Control"
-            case .command: return "⌘ Command"
-            case .shift: return "⇧ Shift"
+            case .option: return "⌥"
+            case .control: return "⌃"
+            case .command: return "⌘"
+            case .shift: return "⇧"
             }
         }
     }
@@ -204,15 +204,13 @@ struct KeybindConfiguration: Codable, Equatable {
     /// Get display string for quick jump keybind
     func quickJumpDisplayString() -> String {
         let additional = quickJumpModifiers.displayName
-        let leader = leaderModifier.displayName.components(separatedBy: " ")[0] // Just symbol
-        return additional.isEmpty ? "\(leader)1-9" : "\(leader)\(additional)1-9"
+        return additional.isEmpty ? "\(leaderModifier.displayName)1-9" : "\(leaderModifier.displayName)\(additional)1-9"
     }
 
     /// Get display string for mark to position keybind
     func markToPositionDisplayString() -> String {
         let additional = markToPositionModifiers.displayName
-        let leader = leaderModifier.displayName.components(separatedBy: " ")[0] // Just symbol
-        return "\(leader)\(additional)1-9"
+        return "\(leaderModifier.displayName)\(additional)1-9"
     }
 
     // MARK: - Validation
