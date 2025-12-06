@@ -65,13 +65,40 @@ struct KeybindConfiguration: Codable, Equatable {
 
     // MARK: - Modifier Set
 
-    struct ModifierSet: Codable, Equatable, OptionSet {
+    struct ModifierSet: Equatable, OptionSet, Codable {
         let rawValue: Int
 
         static let shift = ModifierSet(rawValue: 1 << 0)
         static let control = ModifierSet(rawValue: 1 << 1)
         static let option = ModifierSet(rawValue: 1 << 2)
         static let command = ModifierSet(rawValue: 1 << 3)
+
+        private static let allModifiers: [(ModifierSet, String)] = [
+            (.shift, "shift"), (.control, "control"), (.option, "option"), (.command, "command")
+        ]
+
+        init(rawValue: Int) {
+            self.rawValue = rawValue
+        }
+
+        init(from decoder: Decoder) throws {
+            let container = try decoder.singleValueContainer()
+            let names = try container.decode([String].self)
+            var result = 0
+            for (modifier, name) in Self.allModifiers {
+                if names.contains(name) { result |= modifier.rawValue }
+            }
+            self.rawValue = result
+        }
+
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.singleValueContainer()
+            var names: [String] = []
+            for (modifier, name) in Self.allModifiers {
+                if contains(modifier) { names.append(name) }
+            }
+            try container.encode(names)
+        }
 
         func toCGEventFlags() -> CGEventFlags {
             var flags = CGEventFlags()
@@ -94,23 +121,26 @@ struct KeybindConfiguration: Codable, Equatable {
 
     // MARK: - Key Code Definition
 
-    enum KeyCode: Int, Codable {
-        case tab = 48
-        case h = 4
-        case m = 46
-        case escape = 53
-        case one = 18
-        case two = 19
-        case three = 20
-        case four = 21
-        case five = 23
-        case six = 22
-        case seven = 26
-        case eight = 28
-        case nine = 25
+    enum KeyCode: String, Codable {
+        case tab, h, m, escape
+        case one, two, three, four, five, six, seven, eight, nine
 
         var cgKeyCode: Int64 {
-            return Int64(rawValue)
+            switch self {
+            case .tab: return 48
+            case .h: return 4
+            case .m: return 46
+            case .escape: return 53
+            case .one: return 18
+            case .two: return 19
+            case .three: return 20
+            case .four: return 21
+            case .five: return 23
+            case .six: return 22
+            case .seven: return 26
+            case .eight: return 28
+            case .nine: return 25
+            }
         }
 
         var displayName: String {
