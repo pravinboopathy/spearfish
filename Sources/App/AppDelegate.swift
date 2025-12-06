@@ -42,27 +42,30 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func setupServices() {
-        // Initialize services in dependency order
-        configurationService = ConfigurationService()
-        iconCacheService = IconCacheService()
-        windowService = WindowService(iconCache: iconCacheService!)
-        harpoonService = HarpoonService(
-            windowService: windowService!,
-            appState: appState
-        )
-        hotkeyService = HotkeyService(
-            harpoonService: harpoonService!,
+        // Initialize services in dependency order using local variables
+        let config = ConfigurationService()
+        let iconCache = IconCacheService()
+        let window = WindowService(iconCache: iconCache)
+        let harpoon = HarpoonService(windowService: window, appState: appState)
+        let hotkey = HotkeyService(
+            harpoonService: harpoon,
             appState: appState!,
-            configurationService: configurationService!
+            configurationService: config
+        )
+        let picker = PickerWindowController(
+            appState: appState!,
+            configurationService: config,
+            harpoonService: harpoon,
+            windowService: window
         )
 
-        // Initialize picker window controller
-        pickerWindowController = PickerWindowController(
-            appState: appState!,
-            configurationService: configurationService!,
-            harpoonService: harpoonService!,
-            windowService: windowService!
-        )
+        // Assign to instance properties
+        configurationService = config
+        iconCacheService = iconCache
+        windowService = window
+        harpoonService = harpoon
+        hotkeyService = hotkey
+        pickerWindowController = picker
 
         // Start hotkey monitoring
         hotkeyService?.start()
