@@ -16,19 +16,24 @@ struct PickerView: View {
     var body: some View {
         VStack(spacing: 0) {
             // Header
-            HStack {
-                Image(systemName: "target")
-                    .foregroundColor(.white)
+            HStack(spacing: 8) {
+                Image(systemName: "scope")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.white.opacity(0.9))
                 Text("Harpoon")
-                    .font(.headline)
-                    .foregroundColor(.white)
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(.white.opacity(0.9))
                 Spacer()
+                Text("⎋ close")
+                    .font(.system(size: 11))
+                    .foregroundColor(.white.opacity(0.3))
             }
-            .padding()
-            .background(Color.black.opacity(0.3))
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(Color.white.opacity(0.03))
 
             // Window list
-            VStack(spacing: 8) {
+            VStack(spacing: 6) {
                 ForEach(1...9, id: \.self) { position in
                     if let window = appState.pinnedWindows.first(where: { $0.position == position }) {
                         WindowCardView(
@@ -43,36 +48,33 @@ struct PickerView: View {
                     }
                 }
             }
-            .padding()
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
 
             // Footer with keybind hints
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Press 1-9 to jump • ⎋ to cancel")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                HStack(spacing: 12) {
-                    KeybindHint(
-                        label: "Toggle",
-                        keybind: configurationService.configuration.togglePickerDisplayString()
-                    )
-                    KeybindHint(
-                        label: "Mark",
-                        keybind: configurationService.configuration.markWindowDisplayString()
-                    )
-                    KeybindHint(
-                        label: "Quick Jump",
-                        keybind: configurationService.configuration.quickJumpDisplayString()
-                    )
-                }
-                .font(.caption2)
+            HStack(spacing: 16) {
+                KeybindHint(
+                    label: "Toggle",
+                    keybind: configurationService.configuration.togglePickerDisplayString()
+                )
+                KeybindHint(
+                    label: "Mark",
+                    keybind: configurationService.configuration.markWindowDisplayString()
+                )
+                KeybindHint(
+                    label: "Jump",
+                    keybind: configurationService.configuration.quickJumpDisplayString()
+                )
             }
-            .padding()
-            .background(Color.black.opacity(0.2))
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .frame(maxWidth: .infinity)
+            .background(Color.white.opacity(0.03))
         }
         .frame(width: UIConstants.Picker.width)
         .background(.ultraThinMaterial)  // GPU-accelerated blur
-        .cornerRadius(UIConstants.Card.cornerRadius)
-        .shadow(radius: 20)
+        .cornerRadius(12)
+        .shadow(color: .black.opacity(0.3), radius: 30, x: 0, y: 10)
         .drawingGroup()  // Force Metal rendering
     }
 }
@@ -82,16 +84,17 @@ struct KeybindHint: View {
     let keybind: String
 
     var body: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 6) {
             Text(label)
-                .foregroundColor(.secondary)
+                .font(.system(size: 11))
+                .foregroundColor(.white.opacity(0.4))
             Text(keybind)
-                .foregroundColor(.white)
-                .fontWeight(.medium)
+                .font(.system(size: 11, weight: .medium, design: .rounded))
+                .foregroundColor(.white.opacity(0.7))
                 .padding(.horizontal, 6)
-                .padding(.vertical, 2)
-                .background(Color.white.opacity(0.1))
-                .cornerRadius(4)
+                .padding(.vertical, 3)
+                .background(Color.white.opacity(0.08))
+                .cornerRadius(5)
         }
     }
 }
