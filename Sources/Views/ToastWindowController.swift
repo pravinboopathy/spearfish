@@ -46,12 +46,10 @@ class ToastWindowController {
         // Position at bottom center of main screen
         if let screen = NSScreen.main {
             let screenFrame = screen.visibleFrame
-            let windowWidth: CGFloat = 300
-            let windowHeight: CGFloat = 50
-            let x = screenFrame.midX - (windowWidth / 2)
-            let y = screenFrame.minY + 100  // 100 points from bottom
+            let x = screenFrame.midX - (UIConstants.Toast.width / 2)
+            let y = screenFrame.minY + UIConstants.Toast.bottomOffset
 
-            window?.setFrame(NSRect(x: x, y: y, width: windowWidth, height: windowHeight), display: true)
+            window?.setFrame(NSRect(x: x, y: y, width: UIConstants.Toast.width, height: UIConstants.Toast.height), display: true)
         }
 
         window?.orderFront(nil)
@@ -70,7 +68,7 @@ class ToastWindowController {
 
     private func createWindow() {
         let panel = NSPanel(
-            contentRect: NSRect(x: 0, y: 0, width: 300, height: 50),
+            contentRect: NSRect(x: 0, y: 0, width: UIConstants.Toast.width, height: UIConstants.Toast.height),
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
             defer: false
@@ -104,7 +102,7 @@ private struct ToastContentView: View {
         .padding(.horizontal, 20)
         .padding(.vertical, 12)
         .background(backgroundColor)
-        .cornerRadius(10)
+        .cornerRadius(UIConstants.Toast.cornerRadius)
         .shadow(radius: 10)
     }
 

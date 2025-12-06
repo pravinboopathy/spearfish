@@ -69,9 +69,9 @@ struct PickerView: View {
             .padding()
             .background(Color.black.opacity(0.2))
         }
-        .frame(width: 400)
+        .frame(width: UIConstants.Picker.width)
         .background(.ultraThinMaterial)  // GPU-accelerated blur
-        .cornerRadius(12)
+        .cornerRadius(UIConstants.Card.cornerRadius)
         .shadow(radius: 20)
         .drawingGroup()  // Force Metal rendering
     }
@@ -138,7 +138,7 @@ class PickerWindowController {
         )
 
         let panel = NSPanel(
-            contentRect: NSRect(x: 0, y: 0, width: 400, height: 650),
+            contentRect: NSRect(x: 0, y: 0, width: UIConstants.Picker.width, height: UIConstants.Picker.height),
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
             defer: false

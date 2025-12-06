@@ -14,8 +14,9 @@ class IconCacheService {
 
     init() {
         // Create placeholder icon
+        let iconSize = NSSize(width: UIConstants.Icon.cacheSize, height: UIConstants.Icon.cacheSize)
         placeholderIcon = NSImage(systemSymbolName: "app.fill", accessibilityDescription: "App") ??
-            NSImage(size: NSSize(width: 64, height: 64))
+            NSImage(size: iconSize)
     }
 
     // MARK: - Public API
@@ -82,7 +83,8 @@ class IconCacheService {
         let icon = NSWorkspace.shared.icon(forFile: appURL.path)
 
         // Resize to standard size for GPU efficiency
-        let resizedIcon = resizeIcon(icon, to: NSSize(width: 64, height: 64))
+        let iconSize = NSSize(width: UIConstants.Icon.cacheSize, height: UIConstants.Icon.cacheSize)
+        let resizedIcon = resizeIcon(icon, to: iconSize)
 
         setCached(bundleId, icon: resizedIcon)
     }

@@ -12,46 +12,46 @@ struct WindowCardView: View {
     let icon: NSImage?
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: UIConstants.Card.spacing) {
             // Position number
             Text("\(window.position)")
-                .font(.system(size: 24, weight: .bold, design: .monospaced))
+                .font(.system(size: UIConstants.Card.positionFontSize, weight: .bold, design: .monospaced))
                 .foregroundColor(.white)
-                .frame(width: 40)
+                .frame(width: UIConstants.Card.positionWidth)
 
             // App icon
             if let icon = icon {
                 Image(nsImage: icon)
                     .resizable()
                     .interpolation(.high)  // GPU-accelerated scaling
-                    .frame(width: 48, height: 48)
-                    .cornerRadius(8)
+                    .frame(width: UIConstants.Icon.displaySize, height: UIConstants.Icon.displaySize)
+                    .cornerRadius(UIConstants.Card.cornerRadius)
             } else {
                 Image(systemName: "app.fill")
                     .resizable()
-                    .frame(width: 48, height: 48)
+                    .frame(width: UIConstants.Icon.displaySize, height: UIConstants.Icon.displaySize)
                     .foregroundColor(.gray)
             }
 
             // Window info
             VStack(alignment: .leading, spacing: 4) {
                 Text(window.appName)
-                    .font(.system(size: 14, weight: .semibold))
+                    .font(.system(size: UIConstants.Card.titleFontSize, weight: .semibold))
                     .foregroundColor(.white)
                     .lineLimit(1)
 
                 Text(window.windowTitle)
-                    .font(.system(size: 12))
+                    .font(.system(size: UIConstants.Card.subtitleFontSize))
                     .foregroundColor(.white.opacity(0.7))
                     .lineLimit(1)
             }
 
             Spacer()
         }
-        .padding(12)
-        .frame(height: 72)  // Fixed height for performance
+        .padding(UIConstants.Card.padding)
+        .frame(height: UIConstants.Card.height)
         .background(Color.white.opacity(0.1))
-        .cornerRadius(8)
+        .cornerRadius(UIConstants.Card.cornerRadius)
         .compositingGroup()  // Layer flattening for GPU
     }
 }
@@ -61,31 +61,31 @@ struct EmptySlotView: View {
     let markKeybind: String
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: UIConstants.Card.spacing) {
             // Position number
             Text("\(position)")
-                .font(.system(size: 24, weight: .bold, design: .monospaced))
+                .font(.system(size: UIConstants.Card.positionFontSize, weight: .bold, design: .monospaced))
                 .foregroundColor(.white.opacity(0.3))
-                .frame(width: 40)
+                .frame(width: UIConstants.Card.positionWidth)
 
             // Placeholder icon
             Image(systemName: "app.dashed")
                 .resizable()
-                .frame(width: 48, height: 48)
+                .frame(width: UIConstants.Icon.displaySize, height: UIConstants.Icon.displaySize)
                 .foregroundColor(.gray.opacity(0.3))
 
             // Placeholder text
             Text("Empty - Press \(markKeybind) to mark a window")
-                .font(.system(size: 12))
+                .font(.system(size: UIConstants.Card.subtitleFontSize))
                 .foregroundColor(.white.opacity(0.5))
                 .lineLimit(1)
 
             Spacer()
         }
-        .padding(12)
-        .frame(height: 72)  // Fixed height for performance
+        .padding(UIConstants.Card.padding)
+        .frame(height: UIConstants.Card.height)
         .background(Color.white.opacity(0.05))
-        .cornerRadius(8)
+        .cornerRadius(UIConstants.Card.cornerRadius)
         .compositingGroup()  // Layer flattening for GPU
     }
 }
