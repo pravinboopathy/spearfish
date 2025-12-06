@@ -138,6 +138,11 @@ class HarpoonService {
     private func savePinnedWindows() {
         // Update app state to reflect changes
         appState?.updatePinnedWindows(pinnedWindows)
+
+        // Prune unused icons from cache
+        let activeBundleIds = Set(pinnedWindows.map { $0.bundleId })
+        windowService.pruneIconCache(keeping: activeBundleIds)
+
         // TODO: Persist to disk when StorageService is implemented
     }
 }

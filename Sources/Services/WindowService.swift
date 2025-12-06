@@ -179,4 +179,8 @@ class WindowService {
     func getIcon(for bundleId: String) -> NSImage? {
         return iconCache.getIcon(for: bundleId)
     }
+
+    func pruneIconCache(keeping bundleIds: Set<String>) {
+        iconCache.pruneCache(keeping: bundleIds)
+    }
 }

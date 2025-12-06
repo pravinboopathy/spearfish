@@ -47,6 +47,12 @@ class IconCacheService {
         }
     }
 
+    func pruneCache(keeping bundleIds: Set<String>) {
+        queue.async(flags: .barrier) { [weak self] in
+            self?.cache = self?.cache.filter { bundleIds.contains($0.key) } ?? [:]
+        }
+    }
+
     // MARK: - Private Methods
 
     private func getCached(_ bundleId: String) -> NSImage? {
