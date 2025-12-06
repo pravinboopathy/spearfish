@@ -29,11 +29,11 @@ struct KeybindConfiguration: Codable, Equatable {
     // MARK: - Default Configuration
 
     static let `default` = KeybindConfiguration(
-        leaderModifier: .option,
-        togglePickerKey: .tab,
-        markWindowKey: .m,
-        quickJumpModifiers: [],
-        markToPositionModifiers: [.shift]
+        leaderModifier: .control,
+        togglePickerKey: .h,                      // Ctrl+H to toggle picker
+        markWindowKey: .m,                        // Ctrl+M to mark ("harpoon")
+        quickJumpModifiers: [],                   // Ctrl+1-9 to quick jump
+        markToPositionModifiers: [.option]        // Ctrl+Option+1-9 to mark at position
     )
 
     // MARK: - Modifier Key Definition
@@ -70,12 +70,14 @@ struct KeybindConfiguration: Codable, Equatable {
 
         static let shift = ModifierSet(rawValue: 1 << 0)
         static let control = ModifierSet(rawValue: 1 << 1)
-        static let command = ModifierSet(rawValue: 1 << 2)
+        static let option = ModifierSet(rawValue: 1 << 2)
+        static let command = ModifierSet(rawValue: 1 << 3)
 
         func toCGEventFlags() -> CGEventFlags {
             var flags = CGEventFlags()
             if contains(.shift) { flags.insert(.maskShift) }
             if contains(.control) { flags.insert(.maskControl) }
+            if contains(.option) { flags.insert(.maskAlternate) }
             if contains(.command) { flags.insert(.maskCommand) }
             return flags
         }
@@ -83,6 +85,7 @@ struct KeybindConfiguration: Codable, Equatable {
         var displayName: String {
             var parts: [String] = []
             if contains(.control) { parts.append("⌃") }
+            if contains(.option) { parts.append("⌥") }
             if contains(.shift) { parts.append("⇧") }
             if contains(.command) { parts.append("⌘") }
             return parts.isEmpty ? "" : parts.joined()
@@ -93,6 +96,7 @@ struct KeybindConfiguration: Codable, Equatable {
 
     enum KeyCode: Int, Codable {
         case tab = 48
+        case h = 4
         case m = 46
         case escape = 53
         case one = 18
@@ -112,6 +116,7 @@ struct KeybindConfiguration: Codable, Equatable {
         var displayName: String {
             switch self {
             case .tab: return "⇥"
+            case .h: return "H"
             case .m: return "M"
             case .escape: return "⎋"
             case .one: return "1"
@@ -141,7 +146,7 @@ struct KeybindConfiguration: Codable, Equatable {
         let additionalFlags = additional.toCGEventFlags()
 
         // Check that all required additional modifiers are present
-        for flag in [CGEventFlags.maskShift, .maskControl, .maskCommand] {
+        for flag in [CGEventFlags.maskShift, .maskControl, .maskAlternate, .maskCommand] {
             if additionalFlags.contains(flag) && !flags.contains(flag) {
                 return false
             }
