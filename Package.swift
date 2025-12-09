@@ -2,20 +2,20 @@
 import PackageDescription
 
 let package = Package(
-    name: "HarpoonMac",
+    name: "Spearfish",
     platforms: [
         .macOS(.v13)
     ],
     products: [
         .executable(
-            name: "HarpoonMac",
-            targets: ["HarpoonMac"]
+            name: "Spearfish",
+            targets: ["Spearfish"]
         )
     ],
     dependencies: [],
     targets: [
         .executableTarget(
-            name: "HarpoonMac",
+            name: "Spearfish",
             dependencies: []
         )
     ]

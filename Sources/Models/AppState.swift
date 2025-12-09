@@ -1,6 +1,6 @@
 //
 //  AppState.swift
-//  HarpoonMac
+//  Spearfish
 //
 //  Global application state
 //
@@ -10,9 +10,9 @@ import SwiftUI
 import OSLog
 
 class AppState: ObservableObject {
-    private let logger = Logger(subsystem: "com.harpoon.mac", category: "AppState")
+    private let logger = Logger(subsystem: "com.spearfish.mac", category: "AppState")
     @Published var isPickerVisible: Bool = false
-    @Published var pinnedWindows: [HarpoonWindow] = []
+    @Published var pinnedWindows: [SpearfishWindow] = []
     @Published var currentToast: Toast? = nil
 
     // Picker window reference
@@ -40,7 +40,7 @@ class AppState: ObservableObject {
         }
     }
 
-    func updatePinnedWindows(_ windows: [HarpoonWindow]) {
+    func updatePinnedWindows(_ windows: [SpearfishWindow]) {
         pinnedWindows = windows
     }
 

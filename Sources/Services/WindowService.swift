@@ -1,6 +1,6 @@
 //
 //  WindowService.swift
-//  HarpoonMac
+//  Spearfish
 //
 //  Window operations via Accessibility API
 //
@@ -14,7 +14,7 @@ import OSLog
 func _AXUIElementGetWindow(_ element: AXUIElement, _ windowId: UnsafeMutablePointer<CGWindowID>) -> AXError
 
 class WindowService {
-    private let logger = Logger(subsystem: "com.harpoon.mac", category: "WindowService")
+    private let logger = Logger(subsystem: "com.spearfish.mac", category: "WindowService")
     private let iconCache: IconCacheService
 
     init(iconCache: IconCacheService) {

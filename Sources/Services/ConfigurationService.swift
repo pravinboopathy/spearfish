@@ -1,6 +1,6 @@
 //
 //  ConfigurationService.swift
-//  HarpoonMac
+//  Spearfish
 //
 //  Configuration persistence and observation
 //
@@ -10,7 +10,7 @@ import Foundation
 import OSLog
 
 class ConfigurationService: ObservableObject {
-    private let logger = Logger(subsystem: "com.harpoon.mac", category: "ConfigurationService")
+    private let logger = Logger(subsystem: "com.spearfish.mac", category: "ConfigurationService")
 
     @Published private(set) var configuration: KeybindConfiguration {
         didSet {
@@ -22,7 +22,7 @@ class ConfigurationService: ObservableObject {
 
     private static var configDirectoryURL: URL {
         FileManager.default.homeDirectoryForCurrentUser
-            .appendingPathComponent(".config/harpoon_mac")
+            .appendingPathComponent(".config/spearfish")
     }
 
     private static var configFileURL: URL {

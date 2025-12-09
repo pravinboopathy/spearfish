@@ -1,6 +1,6 @@
 //
 //  KeybindConfiguration.swift
-//  HarpoonMac
+//  Spearfish
 //
 //  Keybind configuration model
 //
@@ -31,7 +31,7 @@ struct KeybindConfiguration: Codable, Equatable {
     static let `default` = KeybindConfiguration(
         leaderModifier: .control,
         togglePickerKey: .h,                      // Ctrl+H to toggle picker
-        markWindowKey: .m,                        // Ctrl+M to mark ("harpoon")
+        markWindowKey: .m,                        // Ctrl+M to mark
         quickJumpModifiers: [],                   // Ctrl+1-9 to quick jump
         markToPositionModifiers: [.option]        // Ctrl+Option+1-9 to mark at position
     )

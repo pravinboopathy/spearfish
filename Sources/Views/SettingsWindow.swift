@@ -1,6 +1,6 @@
 //
 //  SettingsWindow.swift
-//  HarpoonMac
+//  Spearfish
 //
 //  Settings configuration panel
 //

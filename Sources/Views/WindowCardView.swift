@@ -1,6 +1,6 @@
 //
 //  WindowCardView.swift
-//  HarpoonMac
+//  Spearfish
 //
 //  Individual window card in picker list
 //
@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct WindowCardView: View {
-    let window: HarpoonWindow
+    let window: SpearfishWindow
     let icon: NSImage?
 
     var body: some View {
@@ -100,7 +100,7 @@ struct WindowCardView_Previews: PreviewProvider {
 
         VStack(spacing: 6) {
             WindowCardView(
-                window: HarpoonWindow(
+                window: SpearfishWindow(
                     cgWindowId: 123,
                     pid: 456,
                     position: 1,

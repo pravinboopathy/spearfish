@@ -1,6 +1,6 @@
 //
 //  ToastWindowController.swift
-//  HarpoonMac
+//  Spearfish
 //
 //  Manages the floating toast notification window
 //

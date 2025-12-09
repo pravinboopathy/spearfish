@@ -1,14 +1,14 @@
 //
-//  HarpoonWindow.swift
-//  HarpoonMac
+//  SpearfishWindow.swift
+//  Spearfish
 //
-//  Model representing a pinned window in the harpoon list
+//  Model representing a pinned window in the spearfish list
 //
 
 import Foundation
 import ApplicationServices
 
-struct HarpoonWindow: Codable, Identifiable, Equatable {
+struct SpearfishWindow: Codable, Identifiable, Equatable {
     let cgWindowId: CGWindowID
     let pid: pid_t
     var position: Int  // 1-9

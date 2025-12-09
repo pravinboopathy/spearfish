@@ -1,17 +1,17 @@
 //
-//  HarpoonService.swift
-//  HarpoonMac
+//  SpearfishService.swift
+//  Spearfish
 //
-//  Core harpoon logic - manages pinned windows
+//  Core spearfish logic - manages pinned windows
 //
 
 import Foundation
 import OSLog
 
-class HarpoonService {
-    private let logger = Logger(subsystem: "com.harpoon.mac", category: "HarpoonService")
+class SpearfishService {
+    private let logger = Logger(subsystem: "com.spearfish.mac", category: "SpearfishService")
     private let windowService: WindowService
-    private var pinnedWindows: [HarpoonWindow] = []
+    private var pinnedWindows: [SpearfishWindow] = []
     private weak var appState: AppState?
 
     init(windowService: WindowService, appState: AppState? = nil) {
@@ -21,7 +21,7 @@ class HarpoonService {
 
     // MARK: - Public API
 
-    func getPinnedWindows() -> [HarpoonWindow] {
+    func getPinnedWindows() -> [SpearfishWindow] {
         return pinnedWindows
     }
 
@@ -35,7 +35,7 @@ class HarpoonService {
         // Find first empty slot (position 1-9)
         let existingPositions = Set(pinnedWindows.map { $0.position })
         guard let nextPosition = (1...9).first(where: { !existingPositions.contains($0) }) else {
-            logger.error("All harpoon slots are full")
+            logger.error("All spearfish slots are full")
             appState?.showToast(.error("All slots full (1-9)"))
             return
         }
@@ -64,8 +64,8 @@ class HarpoonService {
         pinnedWindows.removeAll { $0.position == position }
 
         // Add new window
-        let harpoonWindow = HarpoonWindow(position: position, windowInfo: windowInfo)
-        pinnedWindows.append(harpoonWindow)
+        let spearfishWindow = SpearfishWindow(position: position, windowInfo: windowInfo)
+        pinnedWindows.append(spearfishWindow)
 
         // Sort by position
         pinnedWindows.sort { $0.position < $1.position }
@@ -84,35 +84,35 @@ class HarpoonService {
     }
 
     func jumpToWindow(at position: Int) {
-        guard let harpoonWindow = pinnedWindows.first(where: { $0.position == position }) else {
+        guard let spearfishWindow = pinnedWindows.first(where: { $0.position == position }) else {
             logger.error("No window at position \(position)")
             appState?.showToast(.error("No window at position \(position)"))
             return
         }
 
         // Check if window still exists
-        guard windowService.isWindowValid(harpoonWindow.cgWindowId) else {
-            logger.error("Window no longer exists: \(harpoonWindow.windowTitle)")
+        guard windowService.isWindowValid(spearfishWindow.cgWindowId) else {
+            logger.error("Window no longer exists: \(spearfishWindow.windowTitle)")
             appState?.showToast(.error("Window no longer exists"))
             // Remove from list
             removeWindow(at: position)
             return
         }
 
-        // Create WindowInfo from HarpoonWindow
+        // Create WindowInfo from SpearfishWindow
         let windowInfo = WindowInfo(
-            cgWindowId: harpoonWindow.cgWindowId,
-            pid: harpoonWindow.pid,
-            bundleId: harpoonWindow.bundleId,
-            title: harpoonWindow.windowTitle,
-            appName: harpoonWindow.appName
+            cgWindowId: spearfishWindow.cgWindowId,
+            pid: spearfishWindow.pid,
+            bundleId: spearfishWindow.bundleId,
+            title: spearfishWindow.windowTitle,
+            appName: spearfishWindow.appName
         )
 
         // Activate window
         windowService.activateWindow(windowInfo)
 
         // Update last accessed time
-        if let index = pinnedWindows.firstIndex(where: { $0.id == harpoonWindow.id }) {
+        if let index = pinnedWindows.firstIndex(where: { $0.id == spearfishWindow.id }) {
             pinnedWindows[index].lastAccessed = Date()
             savePinnedWindows()
         }

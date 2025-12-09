@@ -1,6 +1,6 @@
 //
 //  IconCacheService.swift
-//  HarpoonMac
+//  Spearfish
 //
 //  GPU-optimized icon caching service
 //
@@ -9,7 +9,7 @@ import Cocoa
 
 class IconCacheService {
     private var cache: [String: NSImage] = [:]
-    private let queue = DispatchQueue(label: "com.harpoon.iconcache", attributes: .concurrent)
+    private let queue = DispatchQueue(label: "com.spearfish.iconcache", attributes: .concurrent)
     private let placeholderIcon: NSImage
 
     init() {

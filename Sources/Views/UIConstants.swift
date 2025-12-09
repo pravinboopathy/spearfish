@@ -1,6 +1,6 @@
 //
 //  UIConstants.swift
-//  HarpoonMac
+//  Spearfish
 //
 //  Centralized UI dimension constants
 //

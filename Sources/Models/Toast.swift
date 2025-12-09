@@ -1,6 +1,6 @@
 //
 //  Toast.swift
-//  HarpoonMac
+//  Spearfish
 //
 //  Model for toast notifications
 //

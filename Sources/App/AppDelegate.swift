@@ -1,6 +1,6 @@
 //
 //  AppDelegate.swift
-//  HarpoonMac
+//  Spearfish
 //
 //  App lifecycle and menu bar management
 //
@@ -11,7 +11,7 @@ import SwiftUI
 import OSLog
 
 class AppDelegate: NSObject, NSApplicationDelegate {
-    private let logger = Logger(subsystem: "com.harpoon.mac", category: "AppDelegate")
+    private let logger = Logger(subsystem: "com.spearfish.mac", category: "AppDelegate")
     var statusItem: NSStatusItem?
     var appState: AppState?
     var pickerWindowController: PickerWindowController?
@@ -20,12 +20,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     // Services
     var configurationService: ConfigurationService?
     var windowService: WindowService?
-    var harpoonService: HarpoonService?
+    var spearfishService: SpearfishService?
     var hotkeyService: HotkeyService?
     var iconCacheService: IconCacheService?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
-        logger.info("Harpoon macOS starting")
+        logger.info("Spearfish macOS starting")
 
         // Initialize app state
         appState = AppState()
@@ -39,7 +39,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Check for Accessibility permissions
         checkAccessibilityPermissions()
 
-        logger.info("Harpoon macOS ready")
+        logger.info("Spearfish macOS ready")
     }
 
     func setupServices() {
@@ -47,16 +47,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let config = ConfigurationService()
         let iconCache = IconCacheService()
         let window = WindowService(iconCache: iconCache)
-        let harpoon = HarpoonService(windowService: window, appState: appState)
+        let spearfish = SpearfishService(windowService: window, appState: appState)
         let hotkey = HotkeyService(
-            harpoonService: harpoon,
+            spearfishService: spearfish,
             appState: appState!,
             configurationService: config
         )
         let picker = PickerWindowController(
             appState: appState!,
             configurationService: config,
-            harpoonService: harpoon,
+            spearfishService: spearfish,
             windowService: window
         )
         let toast = ToastWindowController(appState: appState!)
@@ -65,7 +65,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         configurationService = config
         iconCacheService = iconCache
         windowService = window
-        harpoonService = harpoon
+        spearfishService = spearfish
         hotkeyService = hotkey
         pickerWindowController = picker
         toastWindowController = toast
@@ -99,7 +99,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
 
         if let button = statusItem?.button {
-            button.image = NSImage(systemSymbolName: "target", accessibilityDescription: "Harpoon")
+            button.image = NSImage(systemSymbolName: "target", accessibilityDescription: "Spearfish")
             button.action = #selector(menuBarIconClicked)
         }
 
@@ -115,12 +115,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 keyEquivalent: "m"))
         menu.addItem(
             NSMenuItem(
-                title: "Show Harpoon Picker", action: #selector(showPicker), keyEquivalent: "h"))
+                title: "Show Spearfish Picker", action: #selector(showPicker), keyEquivalent: "h"))
         menu.addItem(NSMenuItem.separator())
         menu.addItem(
             NSMenuItem(title: "Settings", action: #selector(showSettings), keyEquivalent: ","))
         menu.addItem(NSMenuItem.separator())
-        menu.addItem(NSMenuItem(title: "Quit Harpoon", action: #selector(quit), keyEquivalent: "q"))
+        menu.addItem(NSMenuItem(title: "Quit Spearfish", action: #selector(quit), keyEquivalent: "q"))
 
         statusItem?.menu = menu
     }
@@ -140,7 +140,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let alert = NSAlert()
         alert.messageText = "Accessibility Permission Required"
         alert.informativeText =
-            "Harpoon needs Accessibility permissions to manage windows. Please grant permission in System Preferences."
+            "Spearfish needs Accessibility permissions to manage windows. Please grant permission in System Preferences."
         alert.alertStyle = .warning
         alert.addButton(withTitle: "Open System Preferences")
         alert.addButton(withTitle: "Quit")
@@ -166,7 +166,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     @objc func markCurrentWindow() {
-        harpoonService?.markCurrentWindow()
+        spearfishService?.markCurrentWindow()
     }
 
     @objc func showPicker() {

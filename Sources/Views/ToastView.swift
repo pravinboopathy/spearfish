@@ -1,6 +1,6 @@
 //
 //  ToastView.swift
-//  HarpoonMac
+//  Spearfish
 //
 //  Toast notification view for user feedback
 //
@@ -33,7 +33,7 @@ struct ToastView_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 20) {
             ToastView(message: "Window marked to position 3", systemImage: "checkmark.circle.fill")
-            ToastView(message: "Window removed from harpoon", systemImage: "trash.fill")
+            ToastView(message: "Window removed", systemImage: "trash.fill")
             ToastView(message: "Desktop snapshot saved", systemImage: "camera.fill")
         }
         .padding()

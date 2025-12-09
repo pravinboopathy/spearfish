@@ -1,6 +1,6 @@
 //
 //  PickerWindow.swift
-//  HarpoonMac
+//  Spearfish
 //
 //  GPU-optimized vertical picker UI
 //
@@ -10,7 +10,7 @@ import SwiftUI
 struct PickerView: View {
     @ObservedObject var appState: AppState
     @ObservedObject var configurationService: ConfigurationService
-    let harpoonService: HarpoonService
+    let spearfishService: SpearfishService
     let windowService: WindowService
 
     var body: some View {
@@ -20,7 +20,7 @@ struct PickerView: View {
                 Image(systemName: "scope")
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(.white.opacity(0.9))
-                Text("HarpoonMac")
+                Text("Spearfish")
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundColor(.white.opacity(0.9))
                 Spacer()
@@ -103,18 +103,18 @@ class PickerWindowController {
     private var window: NSWindow?
     private let appState: AppState
     private let configurationService: ConfigurationService
-    private let harpoonService: HarpoonService
+    private let spearfishService: SpearfishService
     private let windowService: WindowService
 
     init(
         appState: AppState,
         configurationService: ConfigurationService,
-        harpoonService: HarpoonService,
+        spearfishService: SpearfishService,
         windowService: WindowService
     ) {
         self.appState = appState
         self.configurationService = configurationService
-        self.harpoonService = harpoonService
+        self.spearfishService = spearfishService
         self.windowService = windowService
     }
 
@@ -136,7 +136,7 @@ class PickerWindowController {
         let contentView = PickerView(
             appState: appState,
             configurationService: configurationService,
-            harpoonService: harpoonService,
+            spearfishService: spearfishService,
             windowService: windowService
         )
 

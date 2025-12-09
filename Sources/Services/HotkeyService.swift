@@ -1,6 +1,6 @@
 //
 //  HotkeyService.swift
-//  HarpoonMac
+//  Spearfish
 //
 //  Global keyboard event handling via CGEventTap
 //
@@ -11,16 +11,16 @@ import Combine
 import OSLog
 
 class HotkeyService {
-    private let logger = Logger(subsystem: "com.harpoon.mac", category: "HotkeyService")
-    private let harpoonService: HarpoonService
+    private let logger = Logger(subsystem: "com.spearfish.mac", category: "HotkeyService")
+    private let spearfishService: SpearfishService
     private let appState: AppState
     private let configurationService: ConfigurationService
     private var eventTap: CFMachPort?
     private var runLoopSource: CFRunLoopSource?
     private var cancellables = Set<AnyCancellable>()
 
-    init(harpoonService: HarpoonService, appState: AppState, configurationService: ConfigurationService) {
-        self.harpoonService = harpoonService
+    init(spearfishService: SpearfishService, appState: AppState, configurationService: ConfigurationService) {
+        self.spearfishService = spearfishService
         self.appState = appState
         self.configurationService = configurationService
 
@@ -171,7 +171,7 @@ class HotkeyService {
 
         if let number = getNumberFromKeyCode(keyCode), !hasOtherModifiers {
             DispatchQueue.main.async { [weak self] in
-                self?.harpoonService.jumpToWindow(at: number)
+                self?.spearfishService.jumpToWindow(at: number)
                 self?.appState.hidePicker()
             }
             return nil
@@ -197,7 +197,7 @@ class HotkeyService {
         }
 
         DispatchQueue.main.async { [weak self] in
-            self?.harpoonService.jumpToWindow(at: number)
+            self?.spearfishService.jumpToWindow(at: number)
         }
         return true
     }
@@ -211,7 +211,7 @@ class HotkeyService {
         }
 
         DispatchQueue.main.async { [weak self] in
-            self?.harpoonService.markCurrentWindow()
+            self?.spearfishService.markCurrentWindow()
         }
         return true
     }
@@ -225,7 +225,7 @@ class HotkeyService {
         }
 
         DispatchQueue.main.async { [weak self] in
-            self?.harpoonService.markCurrentWindow(at: number)
+            self?.spearfishService.markCurrentWindow(at: number)
         }
         return true
     }

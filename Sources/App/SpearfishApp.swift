@@ -1,6 +1,6 @@
 //
-//  HarpoonApp.swift
-//  HarpoonMac
+//  SpearfishApp.swift
+//  Spearfish
 //
 //  Main application entry point
 //
@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct HarpoonApp: App {
+struct SpearfishApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     var body: some Scene {
