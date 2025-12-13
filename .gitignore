@@ -7,3 +7,6 @@ xcuserdata/
 # SPM
 .build
 .swiftpm
+
+# Build output
+build/
