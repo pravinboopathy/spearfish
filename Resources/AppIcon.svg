@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Spearfish App Icon - Filled -->
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#3d3d3d"/>
+      <stop offset="100%" style="stop-color:#252525"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background with macOS-style rounded corners -->
+  <rect width="512" height="512" rx="102" fill="url(#bg)"/>
+  
+  <!-- Marlin icon - filled -->
+  <g transform="translate(256, 256) scale(2.2)">
+    <!-- Body -->
+    <path d="M-40 0 L-15 -12 L30 -4 L45 0 L30 4 L-15 12 Z" fill="#fff"/>
+    <!-- Bill/spear -->
+    <line x1="42" y1="0" x2="55" y2="0" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+    <!-- Dorsal fin -->
+    <path d="M0 -12 L8 -26 L18 -8 Z" fill="#fff"/>
+  </g>
+</svg>
