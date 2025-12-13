@@ -19,15 +19,13 @@ A macOS menu bar app that lets you mark specific windows and jump to them instan
 - macOS 13.0 (Ventura) or later
 - Accessibility permissions (required for window management)
 
-### Build from Source
+### Download
 
-```bash
-git clone https://github.com/pravinboopathy/spearfish.git
-cd spearfish
-swift build -c release
-```
+1. Download `Spearfish.dmg` from the [latest release](https://github.com/pravinboopathy/spearfish/releases/latest)
+2. Open the DMG and drag Spearfish to Applications
+3. Launch Spearfish from Applications
 
-The binary will be at `.build/release/Spearfish`.
+> **Note:** Since the app is unsigned, on first launch right-click → Open (or allow in System Settings → Privacy & Security).
 
 ## Usage
 
@@ -67,25 +65,9 @@ Configuration options:
 - `quickJumpModifiers`: Additional modifiers for quick jump (default: none)
 - `markToPositionModifiers`: Additional modifiers for mark-to-position (default: option)
 
-## Development
+## Contributing
 
-### Project Structure
-
-```
-Sources/
-├── App/           # App entry point and delegate
-├── Models/        # Data models (AppState, SpearfishWindow, KeybindConfiguration)
-├── Services/      # Core logic (WindowService, HotkeyService, SpearfishService)
-└── Views/         # UI components (PickerWindow, WindowCardView, ToastView)
-```
-
-### Build Commands
-
-```bash
-swift build              # Debug build
-swift build -c release   # Release build
-swift run                # Build and run
-```
+See [CONTRIBUTING.md](CONTRIBUTING.md) for build instructions and development setup.
 
 ## License
 
