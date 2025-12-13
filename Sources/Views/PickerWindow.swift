@@ -17,17 +17,9 @@ struct PickerView: View {
         VStack(spacing: 0) {
             // Header
             HStack(spacing: 8) {
-                Group {
-                    if let icon = NSImage.menuBarIcon {
-                        Image(nsImage: icon)
-                            .resizable()
-                            .frame(width: 16, height: 16)
-                    } else {
-                        Image(systemName: "scope")
-                            .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(.white.opacity(0.9))
-                    }
-                }
+                Image(nsImage: NSImage.menuBarIcon)
+                    .resizable()
+                    .frame(width: 16, height: 16)
                 Text("Spearfish")
                     .font(.system(size: 13, weight: .semibold))
                     .foregroundColor(.white.opacity(0.9))

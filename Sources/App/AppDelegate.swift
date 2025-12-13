@@ -99,12 +99,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
 
         if let button = statusItem?.button {
-            if let menuIcon = NSImage.menuBarIcon {
-                menuIcon.size = NSSize(width: 18, height: 18)
-                button.image = menuIcon
-            } else {
-                button.image = NSImage(systemSymbolName: "target", accessibilityDescription: "Spearfish")
-            }
+            let icon = NSImage.menuBarIcon
+            icon.size = NSSize(width: 18, height: 18)
+            button.image = icon
             button.action = #selector(menuBarIconClicked)
         }
 
@@ -190,19 +187,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 // MARK: - NSImage Extension for SVG Loading
 
 extension NSImage {
-    static var appIcon: NSImage? {
-        guard let url = Bundle.module.url(forResource: "AppIcon", withExtension: "svg") else {
-            return nil
-        }
-        return NSImage(contentsOf: url)
-    }
-
-    static var menuBarIcon: NSImage? {
-        guard let url = Bundle.module.url(forResource: "MenuBarIcon", withExtension: "svg") else {
-            return nil
-        }
-        let image = NSImage(contentsOf: url)
-        image?.isTemplate = true  // Enables light/dark mode adaptation
+    static var menuBarIcon: NSImage = {
+        let url = Bundle.module.url(forResource: "SpearfishIcon", withExtension: "svg")!
+        let image = NSImage(contentsOf: url)!
+        image.isTemplate = true
         return image
-    }
+    }()
 }

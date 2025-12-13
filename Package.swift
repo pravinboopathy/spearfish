@@ -17,12 +17,8 @@ let package = Package(
         .executableTarget(
             name: "Spearfish",
             dependencies: [],
-            path: ".",
-            exclude: ["build", "scripts", "README.md", "CONTRIBUTING.md", "LICENSE", ".gitignore", "Resources/Info.plist", "Resources/Spearfish.entitlements"],
-            sources: ["Sources"],
             resources: [
-                .process("Resources/AppIcon.svg"),
-                .process("Resources/MenuBarIcon.svg")
+                .process("Resources/SpearfishIcon.svg")
             ]
         )
     ]
