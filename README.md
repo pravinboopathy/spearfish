@@ -25,7 +25,11 @@ A macOS menu bar app that lets you mark specific windows and jump to them instan
 2. Open the DMG and drag Spearfish to Applications
 3. Launch Spearfish from Applications
 
-> **Note:** Since the app is unsigned, on first launch right-click → Open (or allow in System Settings → Privacy & Security).
+> **Note:** Since the app is unsigned, macOS may show a warning that the app is "damaged." To fix this, run in Terminal after copying to Applications:
+> ```bash
+> xattr -cr /Applications/Spearfish.app
+> ```
+> Then launch Spearfish normally.
 
 ## Usage
 
