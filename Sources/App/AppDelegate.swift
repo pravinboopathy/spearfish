@@ -142,7 +142,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let alert = NSAlert()
         alert.messageText = "Accessibility Permission Required"
         alert.informativeText =
-            "Spearfish needs Accessibility permissions to manage windows. Please grant permission in System Settings, then restart the app."
+            "Spearfish needs Accessibility permissions to manage windows. Please grant permission in System Settings, then reopen the app."
         alert.alertStyle = .warning
         alert.addButton(withTitle: "Open System Settings")
         alert.addButton(withTitle: "Quit")
@@ -155,36 +155,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 string:
                     "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!
             NSWorkspace.shared.open(url)
-
-            // Show follow-up alert with restart option
-            showRestartAlert()
-        } else {
-            NSApplication.shared.terminate(nil)
         }
-    }
 
-    func showRestartAlert() {
-        let alert = NSAlert()
-        alert.messageText = "Restart Required"
-        alert.informativeText = "After enabling Accessibility permission, please restart Spearfish for hotkeys to work."
-        alert.alertStyle = .informational
-        alert.addButton(withTitle: "Restart Now")
-        alert.addButton(withTitle: "Later")
-
-        let response = alert.runModal()
-
-        if response == .alertFirstButtonReturn {
-            relaunchApp()
-        }
-    }
-
-    func relaunchApp() {
-        let url = URL(fileURLWithPath: Bundle.main.resourcePath!)
-        let path = url.deletingLastPathComponent().deletingLastPathComponent().absoluteString
-        let task = Process()
-        task.launchPath = "/usr/bin/open"
-        task.arguments = [path]
-        task.launch()
+        // Quit in both cases - user will reopen after granting permission
         NSApplication.shared.terminate(nil)
     }
 
