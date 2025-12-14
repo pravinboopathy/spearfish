@@ -60,14 +60,9 @@ On first launch, Spearfish will prompt you to grant Accessibility permissions:
 
 ## Configuration
 
-Keybindings can be customized. The default leader modifier is `Control`, but you can change it to `Option`, `Command`, or `Shift`.
+Keybindings can be customized by editing `~/.config/spearfish/config.json`.
 
-Configuration options:
-- `leaderModifier`: The main modifier key (control, option, command, shift)
-- `togglePickerKey`: Key to toggle the picker (default: h)
-- `markWindowKey`: Key to mark current window (default: m)
-- `quickJumpModifiers`: Additional modifiers for quick jump (default: none)
-- `markToPositionModifiers`: Additional modifiers for mark-to-position (default: option)
+See [docs/configuration.md](docs/configuration.md) for all options and examples.
 
 ## Contributing
 
