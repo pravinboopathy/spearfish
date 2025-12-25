@@ -9,9 +9,7 @@
 [![Latest Release](https://img.shields.io/github/v/release/pravinboopathy/spearfish)](https://github.com/pravinboopathy/spearfish/releases/latest)
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="Resources/SpearfishIcon-dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="Resources/SpearfishIcon-light.svg">
-  <img src="Resources/SpearfishIcon-light.svg" alt="Spearfish" width="200">
+  <img src="Resources/SpearfishHero.svg" alt="Spearfish" width="240">
 </picture>
 
 [Download](https://github.com/pravinboopathy/spearfish/releases/latest) · [Quick Start](#quick-start) · [Configuration](docs/configuration.md)
@@ -22,7 +20,7 @@
 
 Tired of mashing `⌘-Tab` through dozens of windows to find the one you need?
 
-**Spearfish** is a fast, keyboard-driven window switcher for macOS. Inspired by [Harpoon](https://github.com/ThePrimeagen/harpoon/tree/harpoon2), it lets you mark windows and jump to them instantly with a single keystroke.
+**Spearfish** is a fast, keyboard-driven window switcher for macOS. Inspired by the beloved Neovim plugin [Harpoon](https://github.com/ThePrimeagen/harpoon/tree/harpoon2), it lets you mark windows and jump to them instantly with a single keystroke.
 
 Perfect for developers, designers, and power users who want a better macOS window manager alternative.
 
@@ -87,10 +85,6 @@ All keybindings are customizable. See [Configuration](docs/configuration.md) for
 Customize keybindings by editing `~/.config/spearfish/config.json`.
 
 See [docs/configuration.md](docs/configuration.md) for all options and examples.
-
-## Inspiration
-
-Spearfish is inspired by [Harpoon](https://github.com/ThePrimeagen/harpoon/tree/harpoon2), the beloved Neovim plugin by [ThePrimeagen](https://github.com/ThePrimeagen) for marking and jumping between files. If you've ever wished you could harpoon your macOS windows the same way you harpoon buffers in Neovim, Spearfish is for you.
 
 ## Contributing
 

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 100">
+  <!-- Motion/speed lines - positioned behind tail -->
+  <g opacity="0.3">
+    <line x1="12" y1="42" x2="42" y2="42" stroke="#2563EB" stroke-width="3" stroke-linecap="round"/>
+    <line x1="5" y1="50" x2="48" y2="50" stroke="#2563EB" stroke-width="3" stroke-linecap="round"/>
+    <line x1="12" y1="58" x2="42" y2="58" stroke="#2563EB" stroke-width="3" stroke-linecap="round"/>
+  </g>
+
+  <!-- Spearfish - sleek marlin silhouette -->
+  <g transform="translate(120, 50) rotate(-8)">
+    <!-- Main body with all fins integrated -->
+    <path d="M-55 0
+             L-68 -14 L-52 -2
+             C-45 -6, -30 -9, -5 -9
+             L2 -28
+             L10 -9
+             C16 -9, 30 -6, 45 -2
+             L55 0
+             L45 2
+             C30 6, 10 9, -4 9
+             L-12 22
+             L-20 9
+             C-30 9, -45 6, -52 2
+             L-68 14 L-55 0 Z"
+          fill="#2563EB"/>
+
+    <!-- Long pointed bill -->
+    <path d="M52 0 L78 0" stroke="#2563EB" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>
