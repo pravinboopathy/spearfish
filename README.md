@@ -1,22 +1,18 @@
 <div align="center">
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="Resources/SpearfishIcon-dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="Resources/SpearfishIcon-light.svg">
-  <img src="Resources/SpearfishIcon-light.svg" alt="Spearfish" height="48">
-</picture>
-
 # Spearfish
 
-### Stop cycling. Start striking.
-
-**Fast Window Switching for macOS**
-
-*[Harpoon](https://github.com/ThePrimeagen/harpoon/tree/harpoon2)-style navigation for your desktop*
+**Stop cycling. Start striking.**
 
 [![macOS 13+](https://img.shields.io/badge/macOS-13%2B-blue)](https://github.com/pravinboopathy/spearfish/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Latest Release](https://img.shields.io/github/v/release/pravinboopathy/spearfish)](https://github.com/pravinboopathy/spearfish/releases/latest)
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="Resources/SpearfishIcon-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="Resources/SpearfishIcon-light.svg">
+  <img src="Resources/SpearfishIcon-light.svg" alt="Spearfish" width="200">
+</picture>
 
 [Download](https://github.com/pravinboopathy/spearfish/releases/latest) · [Quick Start](#quick-start) · [Configuration](docs/configuration.md)
 
