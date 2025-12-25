@@ -1,16 +1,49 @@
+<div align="center">
+
 # Spearfish
 
-Stop cycling. Start striking.
+**Fast Window Switching for macOS**
 
-A macOS menu bar app that lets you mark specific windows and jump to them instantly with keyboard shortcuts.
+*Stop cycling. Start striking.*
 
-## Features
+[![macOS 13+](https://img.shields.io/badge/macOS-13%2B-blue)](https://github.com/pravinboopathy/spearfish/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Latest Release](https://img.shields.io/github/v/release/pravinboopathy/spearfish)](https://github.com/pravinboopathy/spearfish/releases/latest)
 
-- **Mark windows** to numbered slots (1-9) for instant recall
-- **Quick jump** to any marked window with a single hotkey
-- **Window picker** overlay showing all marked windows
-- **Configurable keybindings** with leader modifier support
-- **Menu bar app** that stays out of your way
+[Download](https://github.com/pravinboopathy/spearfish/releases/latest) · [Quick Start](#quick-start) · [Configuration](docs/configuration.md)
+
+</div>
+
+---
+
+Tired of mashing `⌘-Tab` through dozens of windows to find the one you need? **Spearfish** is a lightweight macOS menu bar app that lets you mark your most-used windows and jump to them instantly with keyboard shortcuts.
+
+No more cycling. No more hunting. Just strike.
+
+<!-- Add a demo GIF here: ![Spearfish Demo](assets/demo.gif) -->
+
+## Why Spearfish?
+
+- **Instant access** — Jump directly to any marked window in milliseconds
+- **Keyboard-driven** — Never leave the keyboard to find a window
+- **Lightweight** — Lives quietly in your menu bar, uses minimal resources
+- **Customizable** — Configure keybindings to match your workflow
+- **9 window slots** — Mark up to 9 windows for instant recall
+
+### Perfect for
+
+- **Developers** juggling terminal, editor, browser, and documentation
+- **Designers** switching between creative tools and references
+- **Power users** with multi-monitor setups and many open windows
+- **Anyone** tired of the ⌘-Tab shuffle
+
+## Quick Start
+
+1. **Mark a window** — Focus any window and press `⌃M`
+2. **Do other work** — Switch apps, open new windows, whatever
+3. **Jump back** — Press `⌃1` to instantly return to your marked window
+
+That's it. Your most important windows are now one keystroke away.
 
 ## Installation
 
@@ -23,44 +56,31 @@ A macOS menu bar app that lets you mark specific windows and jump to them instan
 
 1. Download `Spearfish.dmg` from the [latest release](https://github.com/pravinboopathy/spearfish/releases/latest)
 2. Open the DMG and drag Spearfish to Applications
-3. Launch Spearfish from Applications
+3. Run this command in Terminal to allow the unsigned app:
+   ```bash
+   xattr -cr /Applications/Spearfish.app
+   ```
+4. Launch Spearfish from Applications
+5. Grant Accessibility permissions when prompted:
+   - Open **System Settings** → **Privacy & Security** → **Accessibility**
+   - Enable **Spearfish** in the list
+   - Restart Spearfish
 
-> **Note:** Since the app is unsigned, macOS may show a warning that the app is "damaged." To fix this, run in Terminal after copying to Applications:
-> ```bash
-> xattr -cr /Applications/Spearfish.app
-> ```
-> Then launch Spearfish normally.
-
-## Usage
-
-### Default Keybindings
+## Keybindings
 
 | Action | Shortcut |
 |--------|----------|
-| Toggle picker | `⌃H` (Ctrl+H) |
 | Mark current window | `⌃M` (Ctrl+M) |
-| Quick jump to slot | `⌃1-9` (Ctrl+1-9) |
+| Jump to slot | `⌃1-9` (Ctrl+1-9) |
 | Mark to specific slot | `⌃⌥1-9` (Ctrl+Option+1-9) |
+| Toggle picker | `⌃H` (Ctrl+H) |
 | Close picker | `Escape` or `⌃H` |
 
-### Workflow
-
-1. Focus a window you want to mark
-2. Press `⌃M` to mark it to the next available slot, or `⌃⌥1` to mark it to slot 1
-3. Press `⌃1` to instantly jump back to that window from anywhere
-4. Press `⌃H` to see all marked windows in the picker
-
-### Granting Accessibility Permissions
-
-On first launch, Spearfish will prompt you to grant Accessibility permissions:
-
-1. Open **System Settings** → **Privacy & Security** → **Accessibility**
-2. Enable **Spearfish** in the list
-3. Restart Spearfish if needed
+All keybindings are customizable. See [Configuration](docs/configuration.md) for details.
 
 ## Configuration
 
-Keybindings can be customized by editing `~/.config/spearfish/config.json`.
+Customize keybindings by editing `~/.config/spearfish/config.json`.
 
 See [docs/configuration.md](docs/configuration.md) for all options and examples.
 
