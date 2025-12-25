@@ -1,12 +1,14 @@
 <div align="center">
 
-<h1>
+<table><tr><td valign="middle">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="Resources/SpearfishIcon-dark.svg">
     <source media="(prefers-color-scheme: light)" srcset="Resources/SpearfishIcon-light.svg">
-    <img src="Resources/SpearfishIcon-light.svg" alt="" height="40" style="vertical-align: -8px; margin-right: 10px;">
-  </picture>Spearfish
-</h1>
+    <img src="Resources/SpearfishIcon-light.svg" alt="" height="42">
+  </picture>
+</td><td valign="middle">
+  <h1>Spearfish</h1>
+</td></tr></table>
 
 ### Stop cycling. Start striking.
 
