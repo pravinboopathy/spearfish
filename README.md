@@ -4,14 +4,15 @@
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="Resources/SpearfishIcon-dark.svg">
     <source media="(prefers-color-scheme: light)" srcset="Resources/SpearfishIcon-light.svg">
-    <img src="Resources/SpearfishIcon-light.svg" alt="" width="36" height="36" style="vertical-align: middle;">
-  </picture>
-  Spearfish
+    <img src="Resources/SpearfishIcon-light.svg" alt="" height="40" style="vertical-align: -8px; margin-right: 10px;">
+  </picture>Spearfish
 </h1>
 
 ### Stop cycling. Start striking.
 
-**Fast window switching for macOS** · *[Harpoon](https://github.com/ThePrimeagen/harpoon/tree/harpoon2)-style navigation for your desktop*
+**Fast Window Switching for macOS**
+
+*[Harpoon](https://github.com/ThePrimeagen/harpoon/tree/harpoon2)-style navigation for your desktop*
 
 [![macOS 13+](https://img.shields.io/badge/macOS-13%2B-blue)](https://github.com/pravinboopathy/spearfish/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
