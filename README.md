@@ -58,12 +58,8 @@ That's it. Your most important windows are now one keystroke away.
 
 1. Download `Spearfish.dmg` from the [latest release](https://github.com/pravinboopathy/spearfish/releases/latest)
 2. Open the DMG and drag Spearfish to Applications
-3. Run this command in Terminal to allow the unsigned app:
-   ```bash
-   xattr -cr /Applications/Spearfish.app
-   ```
-4. Launch Spearfish from Applications
-5. Grant Accessibility permissions when prompted:
+3. Launch Spearfish from Applications
+4. Grant Accessibility permissions when prompted:
    - Open **System Settings** → **Privacy & Security** → **Accessibility**
    - Enable **Spearfish** in the list
    - Restart Spearfish
