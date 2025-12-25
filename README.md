@@ -26,7 +26,7 @@ Tired of mashing `⌘-Tab` through dozens of windows to find the one you need?
 
 Perfect for developers, designers, and power users who want a better macOS window manager alternative.
 
-No more cycling. No more hunting. Just strike.
+No more cycling. No more searching. Just strike.
 
 <!-- Add a demo GIF here: ![Spearfish Demo](assets/demo.gif) -->
 
