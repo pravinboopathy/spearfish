@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <g transform="translate(50, 50) scale(1)">
+    <!-- Body -->
+    <path d="M-40 0 L-15 -12 L30 -4 L45 0 L30 4 L-15 12 Z" fill="#000"/>
+    <!-- Bill/spear -->
+    <line x1="42" y1="0" x2="55" y2="0" stroke="#000" stroke-width="4" stroke-linecap="round"/>
+    <!-- Dorsal fin -->
+    <path d="M0 -12 L8 -26 L18 -8 Z" fill="#000"/>
+  </g>
+</svg>

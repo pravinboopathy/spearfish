@@ -1,6 +1,10 @@
 <div align="center">
 
-<img src="Resources/AppIcon.svg" alt="Spearfish icon" width="128" height="128">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="Resources/SpearfishIcon-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="Resources/SpearfishIcon-light.svg">
+  <img src="Resources/SpearfishIcon-light.svg" alt="Spearfish" width="64" height="64">
+</picture>
 
 # Spearfish
 
