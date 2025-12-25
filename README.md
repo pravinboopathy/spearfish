@@ -20,9 +20,11 @@
 
 ---
 
-A fast, keyboard-driven **window switcher for macOS**. Inspired by [Harpoon](https://github.com/ThePrimeagen/harpoon/tree/harpoon2), Spearfish lets you mark windows and jump to them instantly — no more cycling through `⌘-Tab`.
+Tired of mashing `⌘-Tab` through dozens of windows to find the one you need?
 
-**Spearfish** is a lightweight menu bar app that brings Harpoon-style navigation to your desktop. Mark your most important windows, assign them to slots, and switch between them with a single keystroke. Perfect for developers, designers, and power users who want a better **macOS window manager** alternative.
+**Spearfish** is a fast, keyboard-driven window switcher for macOS. Inspired by [Harpoon](https://github.com/ThePrimeagen/harpoon/tree/harpoon2), it lets you mark windows and jump to them instantly with a single keystroke.
+
+Perfect for developers, designers, and power users who want a better macOS window manager alternative.
 
 No more cycling. No more hunting. Just strike.
 
