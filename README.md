@@ -4,6 +4,8 @@
 
 **Fast Window Switching for macOS**
 
+*[Harpoon](https://github.com/ThePrimeagen/harpoon/tree/harpoon2)-style navigation for your desktop*
+
 *Stop cycling. Start striking.*
 
 [![macOS 13+](https://img.shields.io/badge/macOS-13%2B-blue)](https://github.com/pravinboopathy/spearfish/releases)
@@ -83,6 +85,10 @@ All keybindings are customizable. See [Configuration](docs/configuration.md) for
 Customize keybindings by editing `~/.config/spearfish/config.json`.
 
 See [docs/configuration.md](docs/configuration.md) for all options and examples.
+
+## Inspiration
+
+Spearfish is inspired by [Harpoon](https://github.com/ThePrimeagen/harpoon/tree/harpoon2), the beloved Neovim plugin by [ThePrimeagen](https://github.com/ThePrimeagen) for marking and jumping between files. If you've ever wished you could harpoon your macOS windows the same way you harpoon buffers in Neovim, Spearfish is for you.
 
 ## Contributing
 
