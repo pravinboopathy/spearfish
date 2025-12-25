@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="Resources/AppIcon.svg" alt="Spearfish icon" width="128" height="128">
+
 # Spearfish
 
 **Fast Window Switching for macOS**
