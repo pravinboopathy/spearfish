@@ -102,8 +102,7 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 BUILD_DIR="$PROJECT_DIR/build"
 ARCHIVE_PATH="$BUILD_DIR/$APP_NAME.xcarchive"
 EXPORT_DIR="$BUILD_DIR"
-APP_BUNDLE="$EXPORT_DIR/$APP_NAME.app"
-EXPORT_OPTIONS_PLIST="$BUILD_DIR/ExportOptions.plist"
+BINARY_PATH="$EXPORT_DIR/$APP_NAME"
 PACKAGE_SWIFT="$PROJECT_DIR/Package.swift"
 
 # Colors for output
@@ -126,56 +125,6 @@ fi
 echo_info "Cleaning previous build..."
 rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
-
-# Create ExportOptions.plist
-create_export_options() {
-    local METHOD="$1"  # none, developer-id, or app-store
-    
-    echo_info "Creating export options..."
-    
-    cat > "$EXPORT_OPTIONS_PLIST" <<EOF
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>method</key>
-    <string>$METHOD</string>
-EOF
-
-    if [ "$SIGN_APP" = true ]; then
-        if [ -n "$DEVELOPMENT_TEAM" ]; then
-            cat >> "$EXPORT_OPTIONS_PLIST" <<EOF
-    <key>teamID</key>
-    <string>$DEVELOPMENT_TEAM</string>
-EOF
-        fi
-        
-        if [ "$USE_AUTOMATIC_SIGNING" = false ] && [ -n "$CODE_SIGN_IDENTITY" ]; then
-            cat >> "$EXPORT_OPTIONS_PLIST" <<EOF
-    <key>signingStyle</key>
-    <string>manual</string>
-    <key>signingCertificate</key>
-    <string>$CODE_SIGN_IDENTITY</string>
-EOF
-        else
-            cat >> "$EXPORT_OPTIONS_PLIST" <<EOF
-    <key>signingStyle</key>
-    <string>automatic</string>
-EOF
-        fi
-    fi
-    
-    cat >> "$EXPORT_OPTIONS_PLIST" <<EOF
-    <key>destination</key>
-    <string>export</string>
-    <key>compileBitcode</key>
-    <false/>
-    <key>uploadSymbols</key>
-    <false/>
-</dict>
-</plist>
-EOF
-}
 
 # Validate signing configuration
 if [ "$SIGN_APP" = true ]; then
@@ -254,44 +203,38 @@ fi
 
 echo_info "Archive created successfully"
 
-# Create export options plist
-if [ "$SIGN_APP" = true ]; then
-    create_export_options "developer-id"
+# For command-line tools, the binary is in the archive already
+# Copy it directly instead of using -exportArchive
+ARCHIVED_BINARY="$ARCHIVE_PATH/Products/usr/local/bin/$APP_NAME"
+
+if [ -f "$ARCHIVED_BINARY" ]; then
+    echo_info "Copying binary from archive..."
+    mkdir -p "$EXPORT_DIR"
+    cp "$ARCHIVED_BINARY" "$EXPORT_DIR/$APP_NAME"
+    chmod +x "$EXPORT_DIR/$APP_NAME"
+    
+    if [ $? -ne 0 ]; then
+        echo_error "Failed to copy binary"
+        exit 1
+    fi
+    
+    echo_info "Binary exported successfully"
 else
-    create_export_options "none"
-fi
-
-# Export the archive
-echo_info "Exporting app bundle..."
-xcodebuild -exportArchive \
-    -archivePath "$ARCHIVE_PATH" \
-    -exportPath "$EXPORT_DIR" \
-    -exportOptionsPlist "$EXPORT_OPTIONS_PLIST"
-
-if [ $? -ne 0 ]; then
-    echo_error "Export failed"
+    echo_error "Archived binary not found at $ARCHIVED_BINARY"
     exit 1
 fi
-
-# Verify app bundle was created
-if [ ! -d "$APP_BUNDLE" ]; then
-    echo_error "App bundle not found at $APP_BUNDLE"
-    exit 1
-fi
-
-echo_info "Export successful"
 
 # Verify signature if signed
 if [ "$SIGN_APP" = true ]; then
     echo_info "Verifying code signature..."
-    codesign --verify --deep --strict --verbose=2 "$APP_BUNDLE"
+    codesign --verify --deep --strict --verbose=2 "$BINARY_PATH"
     
     if [ $? -eq 0 ]; then
         echo_info "Code signature verified successfully"
         
         # Display signature info
         echo_info "Signature details:"
-        codesign -dvv "$APP_BUNDLE" 2>&1 | grep -E "Authority|TeamIdentifier|Identifier"
+        codesign -dvv "$BINARY_PATH" 2>&1 | grep -E "Authority|TeamIdentifier|Identifier"
     else
         echo_error "Code signature verification failed"
         exit 1
@@ -322,7 +265,7 @@ if [ "$NOTARIZE_APP" = true ]; then
     # Create a ZIP for notarization
     NOTARIZE_ZIP="$BUILD_DIR/$APP_NAME-notarize.zip"
     echo_info "Creating ZIP for notarization..."
-    ditto -c -k --keepParent "$APP_BUNDLE" "$NOTARIZE_ZIP"
+    ditto -c -k --keepParent "$BINARY_PATH" "$NOTARIZE_ZIP"
     
     # Submit for notarization
     echo_info "Submitting for notarization (this may take several minutes)..."
@@ -342,12 +285,13 @@ if [ "$NOTARIZE_APP" = true ]; then
         
         # Staple the notarization ticket
         echo_info "Stapling notarization ticket..."
-        xcrun stapler staple "$APP_BUNDLE"
+        xcrun stapler staple "$BINARY_PATH"
         
         if [ $? -eq 0 ]; then
             echo_info "Stapling successful!"
         else
-            echo_warn "Stapling failed. The app is notarized but users may see a delay on first launch."
+            echo_warn "Stapling failed (expected for binaries - stapling only works with app bundles)."
+            echo_warn "The binary is notarized and will be verified online on first use."
         fi
     else
         echo_error "Notarization failed!"
@@ -360,22 +304,29 @@ fi
 # Done
 echo ""
 echo_info "Build complete!"
-echo_info "App bundle created at: $APP_BUNDLE"
+echo_info "Binary created at: $BINARY_PATH"
+
+# Display binary info
+echo ""
+echo "Binary info:"
+lipo -info "$BINARY_PATH"
+file "$BINARY_PATH"
 
 if [ "$SIGN_APP" = true ]; then
-    echo_info "App is signed with Developer ID"
+    echo ""
+    echo_info "Binary is signed with Developer ID"
 fi
 
 if [ "$NOTARIZE_APP" = true ]; then
-    echo_info "App is notarized and ready for distribution"
+    echo_info "Binary is notarized and ready for distribution"
 fi
 
 echo ""
-echo "To run the app:"
-echo "  open \"$APP_BUNDLE\""
+echo "To run the binary:"
+echo "  $BINARY_PATH"
 echo ""
-echo "To create a DMG for distribution:"
-echo "  ./scripts/create-dmg.sh"
+echo "To install:"
+echo "  sudo cp $BINARY_PATH /usr/local/bin/"
 
 if [ "$SIGN_APP" = false ]; then
     echo ""
@@ -389,3 +340,12 @@ if [ "$SIGN_APP" = false ]; then
     echo "To sign and notarize:"
     echo "  $0 --notarize --team-id YOUR_TEAM_ID --apple-id your@email.com"
 fi
+
+
+
+
+
+
+
+
+
