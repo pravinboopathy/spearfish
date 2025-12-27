@@ -104,6 +104,7 @@ ARCHIVE_PATH="$BUILD_DIR/$APP_NAME.xcarchive"
 EXPORT_DIR="$BUILD_DIR"
 APP_BUNDLE="$EXPORT_DIR/$APP_NAME.app"
 EXPORT_OPTIONS_PLIST="$BUILD_DIR/ExportOptions.plist"
+PACKAGE_SWIFT="$PROJECT_DIR/Package.swift"
 
 # Colors for output
 RED='\033[0;31m'
@@ -115,21 +116,10 @@ echo_info() { echo -e "${GREEN}[INFO]${NC} $1"; }
 echo_warn() { echo -e "${YELLOW}[WARN]${NC} $1"; }
 echo_error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
-# Check for Xcode project
-echo_info "Checking for Xcode project..."
-XCODEPROJ_PATH="$PROJECT_DIR/$APP_NAME.xcodeproj"
-
-if [ ! -d "$XCODEPROJ_PATH" ]; then
-    echo_warn "Xcode project not found at $XCODEPROJ_PATH"
-    echo_info "Generating Xcode project from Package.swift..."
-    cd "$PROJECT_DIR"
-    swift package generate-xcodeproj
-    
-    if [ ! -d "$XCODEPROJ_PATH" ]; then
-        echo_error "Failed to generate Xcode project"
-        exit 1
-    fi
-    echo_info "Xcode project generated successfully"
+# Verify Package.swift exists
+if [ ! -f "$PACKAGE_SWIFT" ]; then
+    echo_error "Package.swift not found at $PACKAGE_SWIFT"
+    exit 1
 fi
 
 # Clean previous build
@@ -229,7 +219,6 @@ echo_info "Building and archiving..."
 cd "$PROJECT_DIR"
 
 XCODEBUILD_ARGS=(
-    -project "$XCODEPROJ_PATH"
     -scheme "$SCHEME"
     -configuration "$CONFIGURATION"
     -archivePath "$ARCHIVE_PATH"
