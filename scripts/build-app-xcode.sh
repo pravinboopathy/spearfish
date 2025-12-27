@@ -221,6 +221,7 @@ cd "$PROJECT_DIR"
 XCODEBUILD_ARGS=(
     -scheme "$SCHEME"
     -configuration "$CONFIGURATION"
+    -destination "platform=macOS"
     -archivePath "$ARCHIVE_PATH"
 )
 
