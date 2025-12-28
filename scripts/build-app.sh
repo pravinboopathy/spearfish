@@ -424,13 +424,28 @@ if [ "$NOTARIZE_APP" = true ]; then
     
     # Submit for notarization
     echo_info "Submitting for notarization (this may take several minutes)..."
+    
+    # Create a temporary file to capture output
+    NOTARIZE_LOG="$BUILD_DIR/notarize_output.log"
+    
+    # Submit and capture output while still showing it to the user
     xcrun notarytool submit "$NOTARIZE_ZIP" \
         --apple-id "$APPLE_ID" \
         --team-id "$DEVELOPMENT_TEAM" \
         --password "$APP_PASSWORD" \
-        --wait
+        --wait 2>&1 | tee "$NOTARIZE_LOG"
     
-    NOTARIZE_STATUS=$?
+    NOTARIZE_STATUS=${PIPESTATUS[0]}
+    
+    # Extract submission ID from output
+    SUBMISSION_ID=$(grep -E "^\s*id:" "$NOTARIZE_LOG" | awk '{print $2}')
+    
+    if [ -n "$SUBMISSION_ID" ]; then
+        echo_info "Submission ID: $SUBMISSION_ID"
+    fi
+    
+    # Clean up log file
+    rm -f "$NOTARIZE_LOG"
     
     # Clean up ZIP
     rm -f "$NOTARIZE_ZIP"
@@ -449,8 +464,13 @@ if [ "$NOTARIZE_APP" = true ]; then
         fi
     else
         echo_error "Notarization failed!"
-        echo "To view the notarization log, find your submission ID and run:"
-        echo "  xcrun notarytool log <submission-id> --apple-id $APPLE_ID --team-id $DEVELOPMENT_TEAM"
+        if [ -n "$SUBMISSION_ID" ]; then
+            echo "To view the notarization log, run:"
+            echo "  xcrun notarytool log $SUBMISSION_ID --apple-id $APPLE_ID --team-id $DEVELOPMENT_TEAM"
+        else
+            echo "To view the notarization log, find your submission ID and run:"
+            echo "  xcrun notarytool log <submission-id> --apple-id $APPLE_ID --team-id $DEVELOPMENT_TEAM"
+        fi
         exit 1
     fi
 fi
@@ -495,6 +515,8 @@ if [ "$SIGN_APP" = false ]; then
     echo "To sign and notarize:"
     echo "  $0 --notarize --team-id YOUR_TEAM_ID --apple-id your@email.com"
 fi
+
+
 
 
 
