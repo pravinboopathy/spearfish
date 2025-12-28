@@ -4,9 +4,5 @@
 xcuserdata/
 *.xcuserstate
 
-# SPM
-.build
-.swiftpm
-
 # Build output
 build/
