@@ -17,11 +17,11 @@ targets:
     platform: macOS
     sources:
       - path: Sources
+      - path: Resources
+        buildPhase: resources
         excludes:
-          - "**/Resources/**"
-    resources:
-      - path: Resources/AppIcon.svg
-      - path: Sources/Resources/SpearfishIcon.svg
+          - Info.plist
+          - "*.entitlements"
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.spearfish.mac
