@@ -1,0 +1,54 @@
+name: Spearfish
+options:
+  bundleIdPrefix: com.spearfish
+  deploymentTarget:
+    macOS: "13.0"
+  xcodeVersion: "15.0"
+  generateEmptyDirectories: false
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MACOSX_DEPLOYMENT_TARGET: "13.0"
+
+targets:
+  Spearfish:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources
+        excludes:
+          - "**/Resources/**"
+    resources:
+      - path: Resources/AppIcon.svg
+      - path: Sources/Resources/SpearfishIcon.svg
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.spearfish.mac
+        INFOPLIST_FILE: Resources/Info.plist
+        CODE_SIGN_ENTITLEMENTS: Resources/Spearfish.entitlements
+        ENABLE_HARDENED_RUNTIME: YES
+        CURRENT_PROJECT_VERSION: 3
+        MARKETING_VERSION: 1.0.1
+        CODE_SIGN_STYLE: Automatic
+        COMBINE_HIDPI_IMAGES: YES
+        LD_RUNPATH_SEARCH_PATHS:
+          - "$(inherited)"
+          - "@executable_path/../Frameworks"
+      configs:
+        Debug:
+          SWIFT_OPTIMIZATION_LEVEL: "-Onone"
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS: DEBUG
+        Release:
+          SWIFT_OPTIMIZATION_LEVEL: "-O"
+          SWIFT_COMPILATION_MODE: wholemodule
+
+schemes:
+  Spearfish:
+    build:
+      targets:
+        Spearfish: all
+    run:
+      config: Debug
+    archive:
+      config: Release

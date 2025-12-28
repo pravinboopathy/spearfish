@@ -189,7 +189,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
 extension NSImage {
     static var menuBarIcon: NSImage = {
-        let url = Bundle.module.url(forResource: "SpearfishIcon", withExtension: "svg")!
+        #if SWIFT_PACKAGE
+        let bundle = Bundle.module
+        #else
+        let bundle = Bundle.main
+        #endif
+        let url = bundle.url(forResource: "SpearfishIcon", withExtension: "svg")!
         let image = NSImage(contentsOf: url)!
         image.isTemplate = true
         return image
