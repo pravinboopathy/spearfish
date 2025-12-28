@@ -6,14 +6,27 @@
 
 - macOS 13.0 (Ventura) or later
 - Xcode Command Line Tools (`xcode-select --install`)
+- xcodegen (`brew install xcodegen`)
 
 ### Development
 
 ```bash
 git clone https://github.com/pravinboopathy/spearfish.git
 cd spearfish
-swift build
-swift run
+
+# Generate Xcode project (first time only)
+xcodegen generate
+
+# Build and run
+./scripts/dev.sh --run
+```
+
+### Dev Script Options
+
+```bash
+./scripts/dev.sh           # Build only
+./scripts/dev.sh --run     # Build and launch app
+./scripts/dev.sh --run-fg  # Build and run in foreground (see logs)
 ```
 
 ### Release Build
@@ -38,9 +51,12 @@ Resources/
 └── AppIcon.svg            # App icon source
 
 scripts/
+├── dev.sh         # Development build and run
 ├── build-app.sh   # Build .app bundle
 ├── create-dmg.sh  # Create DMG installer
 └── release.sh     # Full release workflow
+
+project.yml        # Xcode project definition (xcodegen)
 ```
 
 ## Creating a Release
