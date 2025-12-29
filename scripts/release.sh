@@ -88,7 +88,7 @@ echo_info "Updating Info.plist..."
 
 # Build
 echo_info "Building app bundle..."
-"$SCRIPT_DIR/build-app.sh"
+"$SCRIPT_DIR/build-app.sh" --notarize
 
 echo_info "Creating DMG..."
 "$SCRIPT_DIR/create-dmg.sh"
