@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# Spearfish App Bundle Build Script (Xcode-based)
-# Builds, signs, and notarizes using xcodebuild archive/export
+# Spearfish App Bundle Build Script (Xcode IDE-equivalent)
+# Builds release-ready signed and notarized builds for distribution
+# Matches Xcode IDE's Archive → Distribute App → Developer ID workflow
 
 set -e
 
@@ -15,19 +16,13 @@ DEVELOPMENT_TEAM="${DEVELOPMENT_TEAM:-}"
 APPLE_ID="${APPLE_ID:-}"
 APP_PASSWORD="${APP_PASSWORD:-}"
 
-# Build modes
-SIGN_APP=false
+# Notarization mode
 NOTARIZE_APP=false
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
-        --sign)
-            SIGN_APP=true
-            shift
-            ;;
         --notarize)
-            SIGN_APP=true
             NOTARIZE_APP=true
             shift
             ;;
@@ -46,11 +41,13 @@ while [[ $# -gt 0 ]]; do
         --help)
             echo "Usage: $0 [options]"
             echo ""
+            echo "This script builds release-ready signed builds for distribution."
+            echo "It matches what Xcode IDE does when you Archive and Distribute with Developer ID."
+            echo ""
             echo "Options:"
-            echo "  --sign                  Sign the app bundle with Developer ID"
-            echo "  --notarize              Sign and notarize the app (required for distribution)"
-            echo "  --team-id ID            Apple Developer Team ID"
-            echo "  --apple-id EMAIL        Apple ID for notarization"
+            echo "  --notarize              Notarize the app (recommended for distribution)"
+            echo "  --team-id ID            Apple Developer Team ID (required)"
+            echo "  --apple-id EMAIL        Apple ID for notarization (required with --notarize)"
             echo "  --scheme NAME           Xcode scheme name (default: Spearfish)"
             echo ""
             echo "Environment variables:"
@@ -59,13 +56,10 @@ while [[ $# -gt 0 ]]; do
             echo "  APP_PASSWORD            App-specific password for notarization"
             echo ""
             echo "Examples:"
-            echo "  # Build without signing (local development)"
-            echo "  $0"
+            echo "  # Build and sign (like Xcode IDE Archive → Distribute)"
+            echo "  $0 --team-id ABC123"
             echo ""
-            echo "  # Build and sign"
-            echo "  $0 --sign --team-id ABC123"
-            echo ""
-            echo "  # Build, sign, and notarize"
+            echo "  # Build, sign, and notarize (recommended for distribution)"
             echo "  $0 --notarize --team-id ABC123 --apple-id john@example.com"
             exit 0
             ;;
@@ -107,17 +101,15 @@ echo_info "Cleaning previous build..."
 rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 
-# Validate signing configuration
-if [ "$SIGN_APP" = true ]; then
-    echo_info "Code signing enabled"
-
-    if [ -z "$DEVELOPMENT_TEAM" ]; then
-        echo_error "Signing requires --team-id or DEVELOPMENT_TEAM environment variable"
-        exit 1
-    fi
-
-    echo_info "Team ID: $DEVELOPMENT_TEAM"
+# Validate required configuration
+if [ -z "$DEVELOPMENT_TEAM" ]; then
+    echo_error "Team ID is required. Use --team-id or set DEVELOPMENT_TEAM environment variable"
+    echo "Run with --help for usage information"
+    exit 1
 fi
+
+echo_info "Building release-ready signed app for distribution"
+echo_info "Team ID: $DEVELOPMENT_TEAM"
 
 if [ "$NOTARIZE_APP" = true ]; then
     echo_info "Notarization enabled"
@@ -138,29 +130,16 @@ fi
 echo_info "Building and archiving..."
 cd "$PROJECT_DIR"
 
-XCODEBUILD_ARGS=(
-    -project "$XCODEPROJ"
-    -scheme "$SCHEME"
-    -configuration "$CONFIGURATION"
-    -destination "generic/platform=macOS"
-    -archivePath "$ARCHIVE_PATH"
-)
-
-if [ "$SIGN_APP" = true ]; then
-    XCODEBUILD_ARGS+=(
-        DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM"
-        CODE_SIGN_STYLE="Automatic"
-    )
-else
-    # Build without signing for local development
-    XCODEBUILD_ARGS+=(
-        CODE_SIGN_IDENTITY="-"
-        CODE_SIGNING_REQUIRED="NO"
-        CODE_SIGNING_ALLOWED="NO"
-    )
-fi
-
-xcodebuild archive "${XCODEBUILD_ARGS[@]}"
+# Build for distribution (matches Xcode IDE Archive action)
+xcodebuild archive \
+    -project "$XCODEPROJ" \
+    -scheme "$SCHEME" \
+    -configuration "$CONFIGURATION" \
+    -destination "generic/platform=macOS" \
+    -archivePath "$ARCHIVE_PATH" \
+    DEVELOPMENT_TEAM="$DEVELOPMENT_TEAM" \
+    CODE_SIGN_STYLE="Automatic" \
+    ONLY_ACTIVE_ARCH="NO"
 
 if [ $? -ne 0 ]; then
     echo_error "Archive failed"
@@ -169,55 +148,55 @@ fi
 
 echo_info "Archive created successfully"
 
-# Export the archive
-echo_info "Exporting archive..."
+# Export the archive (matches Xcode IDE Distribute App → Developer ID)
+echo_info "Exporting archive with Developer ID signing..."
 
-if [ "$SIGN_APP" = true ]; then
-    # Create ExportOptions.plist for signed export
-    EXPORT_OPTIONS="$BUILD_DIR/ExportOptions.plist"
-    cat > "$EXPORT_OPTIONS" << EOF
+# Create ExportOptions.plist (matches Xcode IDE's export settings)
+EXPORT_OPTIONS="$BUILD_DIR/ExportOptions.plist"
+cat > "$EXPORT_OPTIONS" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>destination</key>
+    <string>export</string>
     <key>method</key>
     <string>developer-id</string>
+    <key>signingCertificate</key>
+    <string>Developer ID Application</string>
     <key>signingStyle</key>
     <string>automatic</string>
+    <key>stripSwiftSymbols</key>
+    <true/>
     <key>teamID</key>
     <string>$DEVELOPMENT_TEAM</string>
 </dict>
 </plist>
 EOF
 
-    xcodebuild -exportArchive \
-        -archivePath "$ARCHIVE_PATH" \
-        -exportPath "$EXPORT_DIR" \
-        -exportOptionsPlist "$EXPORT_OPTIONS"
+xcodebuild -exportArchive \
+    -archivePath "$ARCHIVE_PATH" \
+    -exportPath "$EXPORT_DIR" \
+    -exportOptionsPlist "$EXPORT_OPTIONS"
 
-    if [ $? -ne 0 ]; then
-        echo_error "Export failed"
-        exit 1
-    fi
+if [ $? -ne 0 ]; then
+    echo_error "Export failed"
+    exit 1
+fi
 
-    echo_info "Export completed successfully"
+echo_info "Export completed successfully"
 
-    # Verify signature
-    echo_info "Verifying code signature..."
-    codesign --verify --deep --strict --verbose=2 "$APP_BUNDLE"
+# Verify signature
+echo_info "Verifying code signature..."
+codesign --verify --deep --strict --verbose=2 "$APP_BUNDLE"
 
-    if [ $? -eq 0 ]; then
-        echo_info "Code signature verified successfully"
-        echo_info "Signature details:"
-        codesign -dvv "$APP_BUNDLE" 2>&1 | grep -E "Authority|TeamIdentifier|Identifier"
-    else
-        echo_error "Code signature verification failed"
-        exit 1
-    fi
+if [ $? -eq 0 ]; then
+    echo_info "Code signature verified successfully"
+    echo_info "Signature details:"
+    codesign -dvv "$APP_BUNDLE" 2>&1 | grep -E "Authority|TeamIdentifier|Identifier"
 else
-    # For unsigned builds, just copy the app from the archive
-    echo_info "Extracting app from archive (unsigned)..."
-    cp -R "$ARCHIVE_PATH/Products/Applications/$APP_NAME.app" "$EXPORT_DIR/"
+    echo_error "Code signature verification failed"
+    exit 1
 fi
 
 # Notarization
@@ -286,27 +265,33 @@ echo "Binary info:"
 lipo -info "$BINARY_PATH"
 file "$BINARY_PATH"
 
-if [ "$SIGN_APP" = true ]; then
-    echo ""
-    echo_info "App is signed with Developer ID"
-fi
+echo ""
+echo_info "App is signed with Developer ID"
 
 if [ "$NOTARIZE_APP" = true ]; then
     echo_info "App is notarized and ready for distribution"
+    echo ""
+    echo "Distribution checklist:"
+    echo "  ✓ Built in Release configuration"
+    echo "  ✓ Signed with Developer ID Application certificate"
+    echo "  ✓ Hardened Runtime enabled"
+    echo "  ✓ Notarized by Apple"
+    echo "  ✓ Notarization ticket stapled"
+else
+    echo_warn "App is NOT notarized - users will see security warnings"
+    echo ""
+    echo "To notarize for distribution, run:"
+    echo "  $0 --notarize --team-id $DEVELOPMENT_TEAM --apple-id your@email.com"
 fi
 
 echo ""
-echo "To run the app:"
+echo "To test the app:"
 echo "  open \"$APP_BUNDLE\""
 echo ""
 echo "To create a DMG for distribution:"
 echo "  ./scripts/create-dmg.sh"
 
-if [ "$SIGN_APP" = false ]; then
-    echo ""
-    echo "To sign for distribution:"
-    echo "  $0 --sign --team-id YOUR_TEAM_ID"
-    echo ""
-    echo "To sign and notarize:"
-    echo "  $0 --notarize --team-id YOUR_TEAM_ID --apple-id your@email.com"
-fi
+
+
+
+
